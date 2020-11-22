@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:the_pret_flutter/DropDownButton.dart';
 
 class AddScreen extends StatefulWidget {
-  AddScreen({Key key, this.title}) : super(key: key);
+  AddScreen({Key key, this.title, this.saveTea}) : super(key: key);
 
   final String title;
+  final Function saveTea;
 
   @override
   _AddScreenState createState() => _AddScreenState();
@@ -15,15 +17,13 @@ class _AddScreenState extends State<AddScreen> {
   final _nameController = TextEditingController();
   final _brandController = TextEditingController();
   final _tempController = TextEditingController();
-  final _minutesController = TextEditingController();
-  final _secondsController = TextEditingController();
+  String _minutes = '3';
+  String _seconds = '00';
 
   void dispose() {
     _nameController.dispose();
     _brandController.dispose();
     _tempController.dispose();
-    _minutesController.dispose();
-    _secondsController.dispose();
     super.dispose();
   }
 
@@ -56,44 +56,52 @@ class _AddScreenState extends State<AddScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 60,
-                      child: TextFormField(
-                        controller: _tempController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [LengthLimitingTextInputFormatter(3)],
-                        decoration: InputDecoration(
-                          labelText: 'Temperature',
-                          suffixText: '°C',
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    Column(
                       children: [
+                        Text('Température', style: TextStyle(fontSize: 16)),
                         Container(
-                          width: 30,
+                          width: 60,
                           child: TextFormField(
-                            controller: _minutesController,
+                            controller: _tempController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [LengthLimitingTextInputFormatter(2)],
+                            inputFormatters: [LengthLimitingTextInputFormatter(3)],
                             decoration: InputDecoration(
-                              labelText: 'min',
-                              hintText: '3',
-                              suffixText: ':',
+                              suffixText: '°C',
+                              isDense: true,
                             ),
                           ),
                         ),
-                        Container(
-                          width: 50,
-                          child: TextFormField(
-                            controller: _secondsController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [LengthLimitingTextInputFormatter(2)],
-                            decoration: InputDecoration(
-                              labelText: 's',
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Temps', style: TextStyle(fontSize: 16)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            DropDownButtonWidget(
+                              value: _minutes,
+                              options: ['0', '1', '2', '3', '4', '5'],
+                              onChange: (String value) {
+                                setState(() {
+                                  _minutes = value;
+                                });
+                             },
                             ),
-                          ),
+                            Text('min'),
+                            DropDownButtonWidget(
+                              value: _seconds,
+                              options: ['00', '30'],
+                              onChange: (String value) {
+                                setState(() {
+                                  _seconds = value;
+                                });
+                              },
+                            ),
+                            Text('s'),
+                          ],
                         ),
                       ],
                     ),
@@ -103,7 +111,13 @@ class _AddScreenState extends State<AddScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      print('submit');
+                      Map<String, dynamic> tea = {
+                        'name': _nameController.text,
+                        'brand': _brandController.text,
+                        'temperature': _tempController.text,
+                        'time': _minutes + ':' + _seconds,
+                      };
+                      widget.saveTea(tea);
                     },
                     child: Text('Submit'),
                   ),

@@ -1,12 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:the_pret_flutter/AddScreen.dart';
+import 'package:the_pret_flutter/Timer.dart';
+import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
 
-void main() {
-  runApp(MyApp());
+import 'dart:io';
+import 'dart:async';
+import 'dart:isolate';
+
+// https://codingwithjoe.com/dart-fundamentals-isolates/
+Isolate isolate;
+
+void start() async {
+  ReceivePort receivePort= ReceivePort(); //port for this main isolate to receive messages.
+  isolate = await Isolate.spawn(runTimer, receivePort.sendPort);
+  receivePort.listen((data) {
+    print('RECEIVE: ' + data + ', ');
+  });
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+void runTimer(SendPort sendPort) {
+  int counter = 0;
+  Timer.periodic(new Duration(seconds: 1), (Timer t) {
+    counter++;
+    String msg = 'notification ' + counter.toString();
+    print('SEND: ' + msg + ' - ');
+    sendPort.send(msg);
+  });
+}
+
+void stop() {
+  if (isolate != null) {
+    print('killing isolate');
+    isolate.kill(priority: Isolate.immediate);
+    isolate = null;
+  }
+}
+
+void main() async {
+  runApp(App());
+
+  // print('spawning isolate...');
+
+  // start();
+
+  // print('press enter key to quit...');
+
+  // stop();
+  // print('goodbye!');
+  // exit(0);
+}
+
+
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  final LocalKeyValuePersistence storage = LocalKeyValuePersistence();
+  List<dynamic> teaList = [];
+
+  void initState() {
+    super.initState();
+
+    storage.getObject().then((response) {
+      setState(() {
+        teaList = response ?? [];
+      });
+
+      print(teaList);
+    });
+  }
+
+  void saveTea(Map<String, dynamic> tea) {
+    setState(() {
+      teaList.add(tea);
+    });
+
+    storage.saveObject(teaList);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,13 +96,13 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.green,
       ),
-      home: MyHomePage(title: 'Thé Prêt'),
+      home: MyHomePage(title: 'Thé Prêt', saveTea: this.saveTea, teaList: this.teaList),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, this.saveTea, this.teaList}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -41,25 +114,14 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+  final Function saveTea;
+  final List<dynamic> teaList;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<int> _counter = [];
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter.add(_counter.length);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -93,21 +155,17 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (_counter.length > 4)
-              Text(
-                'Congrat\'s, you added more than 4 elements.',
-              ),
-            Text(
-              _counter.join(', '),
-              style: Theme.of(context).textTheme.headline4,
-            ),
+          children: [
+            TimerWidget(minutes: 1, seconds: 0),
           ],
+          // children: widget.teaList.map((dynamic tea) {
+          //   return Text(tea['name']);
+          // }).toList(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddScreen(title: 'Thé Prêt')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddScreen(title: 'Thé Prêt', saveTea: widget.saveTea)));
         },
         tooltip: 'Add tea',
         child: Icon(Icons.add),
