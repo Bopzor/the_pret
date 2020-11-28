@@ -14,7 +14,6 @@ void runTimer(SendPort sendPort) {
   Timer.periodic(new Duration(seconds: 1), (Timer t) {
     counter++;
     int msg = counter;
-    print('SEND: ' + msg.toString() + ' - ');
     sendPort.send(msg);
   });
 }
@@ -34,6 +33,8 @@ class _TimerState extends State<TimerWidget> {
   int seconds = 0;
   int time = 0;
 
+  double percentage = 0.0;
+
   bool started = false;
   bool alarm = false;
 
@@ -47,6 +48,14 @@ class _TimerState extends State<TimerWidget> {
       minutes = widget.minutes;
       seconds = widget.seconds;
       time = widget.minutes * 60 + widget.seconds;
+    });
+  }
+
+  void updatePercentage() {
+    int startTime = widget.minutes * 60 + widget.seconds;
+      percentage = 1.00 - (time * 100 / startTime / 100);
+
+    setState(() {
     });
   }
 
@@ -79,7 +88,6 @@ class _TimerState extends State<TimerWidget> {
   }
 
   void sendMessage(SendPort sendPort, Object msg) {
-    print('SEND: ' + msg.toString() + ' - ');
     sendPort.send(msg);
   }
 
@@ -89,10 +97,11 @@ class _TimerState extends State<TimerWidget> {
     resumeCapability = isolate.pauseCapability;
 
     receivePort.listen((data) {
-      if (time <= 1) {
+      int startTime = widget.minutes * 60 + widget.seconds;
+
+      if (time <= 0) {
         setState(() {
           started = false;
-          time = widget.minutes * 60 + widget.seconds;
         });
 
         runAlarm();
@@ -102,10 +111,8 @@ class _TimerState extends State<TimerWidget> {
 
       setState(() {
         time--;
+        percentage = 1 - (time / startTime);
       });
-
-      print('RECEIVE: ' + data.toString() + ', ');
-      print('UPDATE TO: ' + time.toString() + ', ');
     });
   }
 
@@ -146,28 +153,83 @@ class _TimerState extends State<TimerWidget> {
 
     setState(() {
       alarm = false;
+      time = widget.minutes * 60 + widget.seconds;
+      percentage = 0.0;
     });
+  }
+
+  Icon displayIcon() {
+    if (alarm) {
+      return Icon(Icons.stop);
+    }
+
+    if (!started) {
+      return Icon(Icons.play_arrow);
+    }
+
+    return Icon(Icons.pause);
+  }
+
+  List<Widget> displayTime() {
+    int min = (time ~/ 60);
+    int sec = time % 60;
+
+    List<Widget> texts = [];
+
+    texts.add(Text((min).toString(), style: TextStyle(fontSize: 60),));
+    texts.add(Text(':', style: TextStyle(fontSize: 60)));
+    texts.add(Text((sec).toString().padLeft(2, '0'), style: TextStyle(fontSize: 60)));
+
+    return texts;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(time.toString()),
-        ElevatedButton(
-          onPressed: () {
-            handleTimer();
-          },
-          child: Text(started ? 'pause' : 'start'),
-        ),
-        alarm ? ElevatedButton(
-          onPressed: () {
-            stopMusic();
-          },
-          child: Text('stop'),
-        ) : Text('')
-      ],
+    return SizedBox(
+      height: 200,
+      width: 200,
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              width: 200,
+              height: 200,
+              child:
+                CircularProgressIndicator(
+                  value: percentage,
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                  strokeWidth: 15,
+                ),
+              ),
+          ) ,
+
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [...displayTime()],
+            ),
+          ),
+
+          Align(
+            alignment: FractionalOffset.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 20.0),
+              child: IconButton(
+                icon: displayIcon(),
+                iconSize: 40.0,
+                onPressed: () {
+                  if (alarm) {
+                    stopMusic();
+                  } else {
+                    handleTimer();
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
