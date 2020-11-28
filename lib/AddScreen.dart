@@ -50,78 +50,90 @@ class _AddScreenState extends State<AddScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextFormField(
+                  style: TextStyle(fontSize: 30),
+                  textCapitalization: TextCapitalization.words,
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
                   ),
                 ),
                 TextFormField(
+                  style: TextStyle(fontSize: 30),
+                  textCapitalization: TextCapitalization.words,
                   controller: _brandController,
                   decoration: InputDecoration(
                     labelText: 'Brand',
                   ),
                 ),
-                Column(
-                  children: [
-                    Text('Température', style: TextStyle(fontSize: 16)),
-                    Container(
-                      width: 60,
-                      child: TextFormField(
-                        controller: _tempController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [LengthLimitingTextInputFormatter(3)],
-                        decoration: InputDecoration(
-                          suffixText: '°C',
-                          isDense: true,
-                        ),
-                      ),
+                Container(
+                  width: 80,
+                  child: TextFormField(
+                    style: TextStyle(fontSize: 30),
+                    textCapitalization: TextCapitalization.words,
+                    controller: _tempController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [LengthLimitingTextInputFormatter(3)],
+                    decoration: InputDecoration(
+                      labelText: 'Temp',
+                      suffixText: '°C',
+                      isDense: true,
                     ),
-                  ],
+                  ),
                 ),
 
-                Row(
-                  children: [
-                    Container(
-                      constraints: BoxConstraints(maxWidth: 100),
-                      child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(initialItem: 2),
-                        itemExtent: 50, //height of each item
-                        looping: true,
-                        onSelectedItemChanged: (int index) {
-                        },
-                        children: <Widget>[
-                          ...minutesOptions.map((options) {
-                            return (
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
-                              )
-                            );
-                        })],
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Time', style: TextStyle(fontSize: 25, color: Colors.grey[600])),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            constraints: BoxConstraints(maxWidth: 100),
+                            child: CupertinoPicker(
+                              scrollController: FixedExtentScrollController(initialItem: 2),
+                              itemExtent: 50, //height of each item
+                              looping: true,
+                              onSelectedItemChanged: (int index) {
+                              },
+                              children: <Widget>[
+                                ...minutesOptions.map((options) {
+                                  return (
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
+                                    )
+                                  );
+                              })],
+                            ),
+                          ),
+                          Container(
+                            constraints: BoxConstraints(maxWidth: 100),
+                            child: CupertinoPicker(
+                              scrollController: FixedExtentScrollController(initialItem: 0),
+                              itemExtent: 50, //height of each item
+                              looping: true,
+                              onSelectedItemChanged: (int index) {
+                              },
+                              children: <Widget>[
+                                ...secondsOptions.map((options) {
+                                  return (
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
+                                    )
+                                  );
+                              })],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Container(
-                      constraints: BoxConstraints(maxWidth: 100),
-                      child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(initialItem: 0),
-                        itemExtent: 50, //height of each item
-                        looping: true,
-                        onSelectedItemChanged: (int index) {
-                        },
-                        children: <Widget>[
-                          ...secondsOptions.map((options) {
-                            return (
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
-                              )
-                            );
-                        })],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
 
                 Padding(
