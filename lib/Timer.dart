@@ -51,14 +51,6 @@ class _TimerState extends State<TimerWidget> {
     });
   }
 
-  void updatePercentage() {
-    int startTime = widget.minutes * 60 + widget.seconds;
-      percentage = 1.00 - (time * 100 / startTime / 100);
-
-    setState(() {
-    });
-  }
-
   void handleTimer() {
     if (started == false) {
       setState(() {
@@ -80,7 +72,6 @@ class _TimerState extends State<TimerWidget> {
   }
 
   void runAlarm() {
-    print('dring dring');
     setState(() {
       alarm = true;
     });
@@ -176,9 +167,9 @@ class _TimerState extends State<TimerWidget> {
 
     List<Widget> texts = [];
 
-    texts.add(Text((min).toString(), style: TextStyle(fontSize: 60),));
-    texts.add(Text(':', style: TextStyle(fontSize: 60)));
-    texts.add(Text((sec).toString().padLeft(2, '0'), style: TextStyle(fontSize: 60)));
+    texts.add(Text((min).toString(), style: TextStyle(fontSize: 90, fontWeight: FontWeight.bold),));
+    texts.add(Text(':', style: TextStyle(fontSize: 90, fontWeight: FontWeight.bold)));
+    texts.add(Text((sec).toString().padLeft(2, '0'), style: TextStyle(fontSize: 90, fontWeight: FontWeight.bold)));
 
     return texts;
   }
@@ -186,14 +177,14 @@ class _TimerState extends State<TimerWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
-      width: 200,
+      height: 250,
+      width: 250,
       child: Stack(
         children: [
           Center(
             child: Container(
-              width: 200,
-              height: 200,
+              width: 250,
+              height: 250,
               child:
                 CircularProgressIndicator(
                   value: percentage,
@@ -217,7 +208,7 @@ class _TimerState extends State<TimerWidget> {
               padding: EdgeInsets.only(bottom: 20.0),
               child: IconButton(
                 icon: displayIcon(),
-                iconSize: 40.0,
+                iconSize: 60.0,
                 onPressed: () {
                   if (alarm) {
                     stopMusic();

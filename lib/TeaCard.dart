@@ -11,7 +11,7 @@ class TeaCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.green.withAlpha(30),
         onTap: () {
-          print('Taped');
+          Navigator.pushNamed(context, '/tea' + '/' + tea['id']);
         },
         child: Container(
           constraints: BoxConstraints(
@@ -56,8 +56,8 @@ class TeaCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(tea['minutes'] + ':', style: TextStyle(fontSize: 35)),
-                        Text(tea['seconds'], style: TextStyle(fontSize: 35)),
+                        Text(tea['time']['minutes'] + ':', style: TextStyle(fontSize: 35)),
+                        Text(tea['time']['seconds'], style: TextStyle(fontSize: 35)),
                       ],
                     ),
                     RichText(
@@ -76,7 +76,7 @@ class TeaCard extends StatelessWidget {
                           ),
                         )
                       ]),
-                    )
+                    ),
                   ],
                 ),
               ],

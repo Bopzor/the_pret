@@ -27,6 +27,11 @@ class _AddScreenState extends State<AddScreen> {
     super.dispose();
   }
 
+  String buildId() {
+    return _nameController.text.replaceAll(' ', '-').toLowerCase()
+      + _brandController.text.replaceAll(' ', '-').toLowerCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,11 +117,15 @@ class _AddScreenState extends State<AddScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Map<String, dynamic> tea = {
+                        'id': buildId(),
                         'name': _nameController.text,
                         'brand': _brandController.text,
                         'temperature': _tempController.text,
-                        'minutes': _minutes,
-                        'seconds': _seconds,
+                        'time': {
+                          'minutes': _minutes,
+                          'seconds': _seconds,
+                        },
+                        'count': 0,
                       };
                       widget.saveTea(tea);
                     },
