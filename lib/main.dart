@@ -1,55 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:the_pret_flutter/AddScreen.dart';
-import 'package:the_pret_flutter/Timer.dart';
+import 'package:the_pret_flutter/TeaCard.dart';
 import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
-
-import 'dart:io';
-import 'dart:async';
-import 'dart:isolate';
-
-// https://codingwithjoe.com/dart-fundamentals-isolates/
-Isolate isolate;
-
-void start() async {
-  ReceivePort receivePort= ReceivePort(); //port for this main isolate to receive messages.
-  isolate = await Isolate.spawn(runTimer, receivePort.sendPort);
-  receivePort.listen((data) {
-    print('RECEIVE: ' + data + ', ');
-  });
-}
-
-void runTimer(SendPort sendPort) {
-  int counter = 0;
-  Timer.periodic(new Duration(seconds: 1), (Timer t) {
-    counter++;
-    String msg = 'notification ' + counter.toString();
-    print('SEND: ' + msg + ' - ');
-    sendPort.send(msg);
-  });
-}
-
-void stop() {
-  if (isolate != null) {
-    print('killing isolate');
-    isolate.kill(priority: Isolate.immediate);
-    isolate = null;
-  }
-}
 
 void main() async {
   runApp(App());
-
-  // print('spawning isolate...');
-
-  // start();
-
-  // print('press enter key to quit...');
-
-  // stop();
-  // print('goodbye!');
-  // exit(0);
 }
-
 
 class App extends StatefulWidget {
   @override
@@ -154,9 +110,17 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TimerWidget(minutes: 1, seconds: 0),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ...widget.teaList.map((tea) => TeaCard(tea: tea)).toList(),
+                ],
+              ),
+            ),
           ],
           // children: widget.teaList.map((dynamic tea) {
           //   return Text(tea['name']);

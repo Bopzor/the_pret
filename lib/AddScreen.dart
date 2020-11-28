@@ -115,7 +115,8 @@ class _AddScreenState extends State<AddScreen> {
                         'name': _nameController.text,
                         'brand': _brandController.text,
                         'temperature': _tempController.text,
-                        'time': _minutes + ':' + _seconds,
+                        'minutes': _minutes,
+                        'seconds': _seconds,
                       };
                       widget.saveTea(tea);
                     },

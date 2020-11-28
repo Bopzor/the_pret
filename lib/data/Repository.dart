@@ -3,5 +3,5 @@ abstract class Repository {
 
   Future<List<dynamic>> getObject();
 
-  Future<void> removeObject(String key);
+  Future<void> removeObject();
 }

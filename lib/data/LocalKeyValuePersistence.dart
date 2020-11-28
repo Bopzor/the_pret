@@ -23,7 +23,7 @@ class LocalKeyValuePersistence implements Repository {
   }
 
   @override
-  Future<void> removeObject(String key) async {
+  Future<void> removeObject() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove(key);
   }
