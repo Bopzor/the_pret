@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:the_pret_flutter/DropDownButton.dart';
 
+import 'package:flutter/cupertino.dart';
+
 class AddScreen extends StatefulWidget {
   AddScreen({Key key, this.title, this.saveTea}) : super(key: key);
 
@@ -17,8 +19,10 @@ class _AddScreenState extends State<AddScreen> {
   final _nameController = TextEditingController();
   final _brandController = TextEditingController();
   final _tempController = TextEditingController();
-  String _minutes = '3';
-  String _seconds = '00';
+  int _minutes = 3;
+  int _seconds = 0;
+  List<int> minutesOptions = [1, 2, 3, 4, 5, 6];
+  List<int> secondsOptions = [0, 15, 30, 45];
 
   void dispose() {
     _nameController.dispose();
@@ -57,61 +61,69 @@ class _AddScreenState extends State<AddScreen> {
                     labelText: 'Brand',
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Column(
                   children: [
-                    Column(
-                      children: [
-                        Text('Température', style: TextStyle(fontSize: 16)),
-                        Container(
-                          width: 60,
-                          child: TextFormField(
-                            controller: _tempController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [LengthLimitingTextInputFormatter(3)],
-                            decoration: InputDecoration(
-                              suffixText: '°C',
-                              isDense: true,
-                            ),
-                          ),
+                    Text('Température', style: TextStyle(fontSize: 16)),
+                    Container(
+                      width: 60,
+                      child: TextFormField(
+                        controller: _tempController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [LengthLimitingTextInputFormatter(3)],
+                        decoration: InputDecoration(
+                          suffixText: '°C',
+                          isDense: true,
                         ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Temps', style: TextStyle(fontSize: 16)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            DropDownButtonWidget(
-                              value: _minutes,
-                              options: ['0', '1', '2', '3', '4', '5'],
-                              onChange: (String value) {
-                                setState(() {
-                                  _minutes = value;
-                                });
-                             },
-                            ),
-                            Text('min'),
-                            DropDownButtonWidget(
-                              value: _seconds,
-                              options: ['00', '30'],
-                              onChange: (String value) {
-                                setState(() {
-                                  _seconds = value;
-                                });
-                              },
-                            ),
-                            Text('s'),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
+
+                Row(
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 100),
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(initialItem: 2),
+                        itemExtent: 50, //height of each item
+                        looping: true,
+                        onSelectedItemChanged: (int index) {
+                        },
+                        children: <Widget>[
+                          ...minutesOptions.map((options) {
+                            return (
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
+                              )
+                            );
+                        })],
+                      ),
+                    ),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 100),
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(initialItem: 0),
+                        itemExtent: 50, //height of each item
+                        looping: true,
+                        onSelectedItemChanged: (int index) {
+                        },
+                        children: <Widget>[
+                          ...secondsOptions.map((options) {
+                            return (
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
+                              )
+                            );
+                        })],
+                      ),
+                    ),
+                  ],
+                ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: ElevatedButton(
