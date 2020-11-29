@@ -86,7 +86,7 @@ class _AddScreenState extends State<AddScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Time', style: TextStyle(fontSize: 25, color: Colors.grey[600])),
+                      Text('Time', style: TextStyle(fontSize: 30, color: Colors.grey[700])),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -137,23 +137,32 @@ class _AddScreenState extends State<AddScreen> {
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Map<String, dynamic> tea = {
-                        'id': buildId(),
-                        'name': _nameController.text,
-                        'brand': _brandController.text,
-                        'temperature': _tempController.text,
-                        'time': {
-                          'minutes': _minutes,
-                          'seconds': _seconds,
-                        },
-                        'count': 0,
-                      };
-                      widget.saveTea(tea);
-                    },
-                    child: Text('Submit'),
+                  padding: const EdgeInsets.only(top: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 100,
+                        child:ElevatedButton(
+                          onPressed: () {
+                            Map<String, dynamic> tea = {
+                              'id': buildId(),
+                              'name': _nameController.text,
+                              'brand': _brandController.text,
+                              'temperature': _tempController.text,
+                              'time': {
+                                'minutes': _minutes,
+                                'seconds': _seconds,
+                              },
+                              'count': 0,
+                            };
+                            widget.saveTea(tea);
+                          },
+                          child: Text('Save', style: TextStyle(fontSize: 30)),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

@@ -88,11 +88,71 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool showSearchbar = false;
+  String query = '';
+  TextEditingController search = TextEditingController();
+
+  bool isMatchingTea(tea) {
+    String brandName = tea['name'] + ' ' + tea['brand'];
+
+    if (brandName.toLowerCase().contains(search.text.trim().toLowerCase())) {
+      return true;
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            tooltip: 'Search',
+            onPressed: () {
+              setState(() {
+                showSearchbar = !showSearchbar;
+              });
+            },
+          ),
+          if (showSearchbar)
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: Container(
+                  width: 200,
+                  child: TextFormField(
+                    autofocus: true,
+                    controller: search,
+                    onChanged: (value) {
+                      setState(() {
+                        query = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                      contentPadding: EdgeInsets.all(10),
+                      filled: true,
+                      fillColor: Colors.white,
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          search.clear();
+
+                          setState(() {
+                            query = '';
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -103,7 +163,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ...widget.teaList.map((tea) => TeaCard(tea: tea)).toList(),
+                  ...widget.teaList.where((tea) {
+                  if (isMatchingTea(tea)) {
+                    return true;
+                  }
+
+                  return false;
+                })
+                .map((tea) => TeaCard(tea: tea)).toList(),
                 ],
               ),
             ),
