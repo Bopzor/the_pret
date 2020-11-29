@@ -56,8 +56,8 @@ class TeaCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(tea['time']['minutes'] + ':', style: TextStyle(fontSize: 35)),
-                        Text(tea['time']['seconds'], style: TextStyle(fontSize: 35)),
+                        Text(tea['time']['minutes'].toString() + ':', style: TextStyle(fontSize: 35)),
+                        Text(tea['time']['seconds'].toString().padLeft(2, '0'), style: TextStyle(fontSize: 35)),
                       ],
                     ),
                     RichText(

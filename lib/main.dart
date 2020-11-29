@@ -92,6 +92,11 @@ class _MyHomePageState extends State<MyHomePage> {
   String query = '';
   TextEditingController search = TextEditingController();
 
+   void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+
   bool isMatchingTea(tea) {
     String brandName = tea['name'] + ' ' + tea['brand'];
 
@@ -165,8 +170,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ...widget.teaList.where(isMatchingTea)
-                .map((tea) => TeaCard(tea: tea)).toList(),
+                  ...widget.teaList.where((tea) => isMatchingTea(tea))
+                    .map((tea) => TeaCard(tea: tea)).toList(),
                 ],
               ),
             ),

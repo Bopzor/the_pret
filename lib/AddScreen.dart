@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:the_pret_flutter/DropDownButton.dart';
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 class AddScreen extends StatefulWidget {
   AddScreen({Key key, this.title, this.saveTea}) : super(key: key);
@@ -33,7 +31,7 @@ class _AddScreenState extends State<AddScreen> {
 
   String buildId() {
     return _nameController.text.replaceAll(' ', '-').toLowerCase()
-      + _brandController.text.replaceAll(' ', '-').toLowerCase();
+      + '-' + _brandController.text.replaceAll(' ', '-').toLowerCase();
   }
 
   @override
@@ -51,7 +49,7 @@ class _AddScreenState extends State<AddScreen> {
               children: <Widget>[
                 TextFormField(
                   style: TextStyle(fontSize: 30),
-                  textCapitalization: TextCapitalization.words,
+                  textCapitalization: TextCapitalization.sentences,
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -59,7 +57,7 @@ class _AddScreenState extends State<AddScreen> {
                 ),
                 TextFormField(
                   style: TextStyle(fontSize: 30),
-                  textCapitalization: TextCapitalization.words,
+                  textCapitalization: TextCapitalization.sentences,
                   controller: _brandController,
                   decoration: InputDecoration(
                     labelText: 'Brand',
@@ -69,7 +67,7 @@ class _AddScreenState extends State<AddScreen> {
                   width: 80,
                   child: TextFormField(
                     style: TextStyle(fontSize: 30),
-                    textCapitalization: TextCapitalization.words,
+                    textCapitalization: TextCapitalization.sentences,
                     controller: _tempController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [LengthLimitingTextInputFormatter(3)],
@@ -97,6 +95,9 @@ class _AddScreenState extends State<AddScreen> {
                               itemExtent: 50, //height of each item
                               looping: true,
                               onSelectedItemChanged: (int index) {
+                                setState(() {
+                                  _minutes = minutesOptions[index];
+                                });
                               },
                               children: <Widget>[
                                 ...minutesOptions.map((options) {
@@ -117,6 +118,9 @@ class _AddScreenState extends State<AddScreen> {
                               itemExtent: 50, //height of each item
                               looping: true,
                               onSelectedItemChanged: (int index) {
+                                setState(() {
+                                  _seconds = secondsOptions[index];
+                                });
                               },
                               children: <Widget>[
                                 ...secondsOptions.map((options) {
@@ -158,6 +162,7 @@ class _AddScreenState extends State<AddScreen> {
                               'count': 0,
                             };
                             widget.saveTea(tea);
+                            Navigator.pop(context);
                           },
                           child: Text('Save', style: TextStyle(fontSize: 30)),
                         ),

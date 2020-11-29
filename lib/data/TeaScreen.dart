@@ -44,8 +44,8 @@ class TeaScreen extends StatelessWidget {
                 ],
               ),
               TimerWidget(
-                minutes: int.parse(tea['time']['minutes']),
-                seconds: int.parse(tea['time']['seconds'])
+                minutes: tea['time']['minutes'],
+                seconds: tea['time']['seconds'],
               ),
               RichText(
                 text: TextSpan(children: [
