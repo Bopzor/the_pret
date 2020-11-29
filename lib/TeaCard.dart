@@ -11,7 +11,7 @@ class TeaCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.green.withAlpha(30),
         onTap: () {
-          Navigator.pushNamed(context, '/tea' + '/' + tea['id']);
+          Navigator.pushNamed(context, '/tea/' + tea['id']);
         },
         child: Container(
           constraints: BoxConstraints(

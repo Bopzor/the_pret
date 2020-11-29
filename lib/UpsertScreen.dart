@@ -2,31 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-class AddScreen extends StatefulWidget {
-  AddScreen({Key key, this.title, this.saveTea}) : super(key: key);
+class UpsertScreen extends StatefulWidget {
+  UpsertScreen({Key key, this.title, this.saveTea, this.tea }) : super(key: key);
 
   final String title;
   final Function saveTea;
+  final Map<String, dynamic> tea;
 
   @override
-  _AddScreenState createState() => _AddScreenState();
+  _UpsertScreenState createState() => _UpsertScreenState();
 }
 
-class _AddScreenState extends State<AddScreen> {
+class _UpsertScreenState extends State<UpsertScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _brandController = TextEditingController();
-  final _tempController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _brandController = TextEditingController();
+  TextEditingController _tempController = TextEditingController();
   int _minutes = 3;
   int _seconds = 0;
   List<int> minutesOptions = [1, 2, 3, 4, 5, 6];
   List<int> secondsOptions = [0, 15, 30, 45];
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.tea != null) {
+      setState(() {
+        _nameController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['name']));
+        _brandController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['brand']));
+        _tempController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['temperature']));
+        _minutes = widget.tea['time']['minutes'];
+        _seconds = widget.tea['time']['seconds'];
+      });
+    }
+  }
 
   void dispose() {
     _nameController.dispose();
     _brandController.dispose();
     _tempController.dispose();
     super.dispose();
+  }
+
+  int getInitialMinutes() {
+    if (widget.tea != null) {
+      return minutesOptions.indexOf(widget.tea['time']['minutes']);
+    }
+
+    return 2;
+  }
+
+  int getInitialSeconds() {
+    if (widget.tea != null) {
+      return secondsOptions.indexOf(widget.tea['time']['seconds']);
+    }
+
+    return 0;
   }
 
   String buildId() {
@@ -91,7 +123,7 @@ class _AddScreenState extends State<AddScreen> {
                           Container(
                             constraints: BoxConstraints(maxWidth: 100),
                             child: CupertinoPicker(
-                              scrollController: FixedExtentScrollController(initialItem: 2),
+                              scrollController: FixedExtentScrollController(initialItem: getInitialMinutes()),
                               itemExtent: 50, //height of each item
                               looping: true,
                               onSelectedItemChanged: (int index) {
@@ -114,7 +146,7 @@ class _AddScreenState extends State<AddScreen> {
                           Container(
                             constraints: BoxConstraints(maxWidth: 100),
                             child: CupertinoPicker(
-                              scrollController: FixedExtentScrollController(initialItem: 0),
+                              scrollController: FixedExtentScrollController(initialItem: getInitialSeconds()),
                               itemExtent: 50, //height of each item
                               looping: true,
                               onSelectedItemChanged: (int index) {
@@ -151,7 +183,6 @@ class _AddScreenState extends State<AddScreen> {
                         child:ElevatedButton(
                           onPressed: () {
                             Map<String, dynamic> tea = {
-                              'id': buildId(),
                               'name': _nameController.text,
                               'brand': _brandController.text,
                               'temperature': _tempController.text,
@@ -161,8 +192,20 @@ class _AddScreenState extends State<AddScreen> {
                               },
                               'count': 0,
                             };
+
+                            if (widget.tea == null) {
+                              tea['id'] = buildId();
+                            } else {
+                              tea['id'] = widget.tea['id'];
+                            }
+
                             widget.saveTea(tea);
-                            Navigator.pop(context);
+
+                            if (widget.tea != null) {
+                              Navigator.of(context).pushNamedAndRemoveUntil('/tea/' + widget.tea['id'], (Route<dynamic> route) =>  route.settings.name == '/');
+                            } else {
+                              Navigator.pop(context);
+                            }
                           },
                           child: Text('Save', style: TextStyle(fontSize: 30)),
                         ),
