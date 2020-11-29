@@ -112,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.search),
             tooltip: 'Search',
             onPressed: () {
+              search.clear();
               setState(() {
                 showSearchbar = !showSearchbar;
               });
@@ -131,10 +132,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         query = value;
                       });
                     },
+                    style: TextStyle(fontSize: 20),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       isDense: true,
-                      contentPadding: EdgeInsets.all(10),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       filled: true,
                       fillColor: Colors.white,
                       suffixIcon: IconButton(
@@ -163,13 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ...widget.teaList.where((tea) {
-                  if (isMatchingTea(tea)) {
-                    return true;
-                  }
-
-                  return false;
-                })
+                  ...widget.teaList.where(isMatchingTea)
                 .map((tea) => TeaCard(tea: tea)).toList(),
                 ],
               ),
