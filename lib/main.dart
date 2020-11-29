@@ -37,14 +37,33 @@ class _AppState extends State<App> {
   }
 
   void updateTea(Map<String, dynamic> tea) {
-    print(tea);
     int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
     print(idx);
     setState(() {
       teaList.replaceRange(idx, idx + 1, [tea]);
     });
 
-    print(teaList);
+    storage.saveObject(teaList);
+  }
+
+  void archiveTea(Map<String, dynamic> tea) {
+    int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
+
+    tea['archive'] = !tea['archive'];
+
+    setState(() {
+      teaList.replaceRange(idx, idx + 1, [tea]);
+    });
+
+    storage.saveObject(teaList);
+  }
+
+  void removeTea(Map<String, dynamic> tea) {
+    int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
+
+    setState(() {
+      teaList.replaceRange(idx, idx + 1, []);
+    });
 
     storage.saveObject(teaList);
   }
@@ -73,7 +92,7 @@ class _AppState extends State<App> {
           dynamic tea = teaList[idx];
 
           if (uri.pathSegments.first == 'tea') {
-            return MaterialPageRoute(builder: (context) => TeaScreen(tea: tea));
+            return MaterialPageRoute(builder: (context) => TeaScreen(tea: tea, archiveTea: archiveTea, removeTea: removeTea));
           }
 
           if (uri.pathSegments.first == 'edit') {
@@ -116,6 +135,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool isMatchingTea(tea) {
     String brandName = tea['name'] + ' ' + tea['brand'];
+
+    if (showSearchbar == false || search.text == '') {
+      if (tea['archive']) {
+        return false;
+      }
+
+      return true;
+    }
 
     if (brandName.toLowerCase().contains(search.text.trim().toLowerCase())) {
       return true;
@@ -191,6 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),

@@ -183,6 +183,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                         child:ElevatedButton(
                           onPressed: () {
                             Map<String, dynamic> tea = {
+                              'id': buildId(),
                               'name': _nameController.text,
                               'brand': _brandController.text,
                               'temperature': _tempController.text,
@@ -191,12 +192,12 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                 'seconds': _seconds,
                               },
                               'count': 0,
+                              'archive': false,
                             };
 
-                            if (widget.tea == null) {
-                              tea['id'] = buildId();
-                            } else {
+                            if (widget.tea != null) {
                               tea['id'] = widget.tea['id'];
+                              tea['archive'] = widget.tea['archive'];
                             }
 
                             widget.saveTea(tea);

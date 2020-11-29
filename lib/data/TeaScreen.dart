@@ -3,9 +3,11 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:the_pret_flutter/Timer.dart';
 
 class TeaScreen extends StatelessWidget {
-  TeaScreen({Key key, this.tea}) : super(key: key);
+  TeaScreen({Key key, this.tea, this.archiveTea, this.removeTea}) : super(key: key);
 
   final tea;
+  final archiveTea;
+  final removeTea;
 
   EdgeInsets setPadding(context) {
     Orientation orientation = MediaQuery.of(context).orientation;
@@ -37,7 +39,10 @@ class TeaScreen extends StatelessWidget {
         SpeedDialChild(
           child: Icon(Icons.archive, color: Colors.white),
           backgroundColor: Colors.deepOrange,
-          onTap: () => print('SECOND CHILD'),
+          onTap: () {
+            archiveTea(tea);
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
+          },
           label: 'Archive',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.deepOrangeAccent,
@@ -45,7 +50,10 @@ class TeaScreen extends StatelessWidget {
         SpeedDialChild(
           child: Icon(Icons.delete, color: Colors.white),
           backgroundColor: Colors.red,
-          onTap: () => print('THIRD CHILD'),
+          onTap: () {
+            removeTea(tea);
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
+          },
           label: 'Delete',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.redAccent,
