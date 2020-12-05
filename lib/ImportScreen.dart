@@ -56,10 +56,6 @@ class _ImportScreenState extends State<ImportScreen> {
     }
   }
 
-  void _clearCachedFiles() {
-    FilePicker.platform.clearTemporaryFiles();
-  }
-
   Future<void> readFile() async {
     try {
       final file = File(_fileName);
@@ -108,12 +104,16 @@ class _ImportScreenState extends State<ImportScreen> {
 
 
       if (missing.length <= 0) {
-        setState(() => _teasList = teasList);
+        setState(() {
+          _teasList = teasList;
+          _error = null;
+        });
       } else {
         setState(() => _error = 'Invalid file');
       }
     } catch (e) {
       print(e.toString());
+      setState(() => _error = 'Invalid file');
 
       return;
     }
@@ -127,64 +127,61 @@ class _ImportScreenState extends State<ImportScreen> {
         title: Text(widget.title),
       ),
       body: Center(
-          child: Padding(
+        child: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              Text('Import data from file: ', style: TextStyle(fontSize: 30),),
               Padding(
                 padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
                 child: Column(
                   children: <Widget>[
-                    RaisedButton(
+                    ElevatedButton(
                       onPressed: () => _openFileExplorer(),
                       child: Text("Open file picker"),
                     ),
-                    RaisedButton(
+                    Builder(
+                      builder: (BuildContext context) => _loadingPath
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 10.0),
+                            child: const CircularProgressIndicator(),
+                          )
+                        : _directoryPath != null
+                          ? ListTile(
+                            title: Text('Directory path'),
+                            subtitle: Text(_directoryPath),
+                          )
+                          : _path != null
+                            ? Container(
+                                padding: const EdgeInsets.only(bottom: 30.0),
+                                height: 50,
+                                child: Scrollbar(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(_error == null ? Icons.check : Icons.close, color: _error == null ? Theme.of(context).accentColor : Colors.red),
+                                      () {
+                                        final String name = _fileName.split('/')[_fileName.split('/').length -1];
+
+                                        return Text(name, style: TextStyle(fontSize: 20),);
+                                      }(),
+                                    ],
+                                    )
+                                ),
+                              )
+                            : const SizedBox(),
+                    ),
+                    ElevatedButton(
                       onPressed: _teasList == null ? null : () => widget.mergeTeas(_teasList),
                       child: Text("Import"),
                     ),
-                    RaisedButton(
-                      onPressed: () => _clearCachedFiles(),
-                      child: Text("Cancel"),
-                    ),
+                    Text(_error == null ? '' : _error, style: TextStyle(color: Colors.red[400]),),
                   ],
                 ),
               ),
-              Builder(
-                builder: (BuildContext context) => _loadingPath
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: const CircularProgressIndicator(),
-                    )
-                  : _directoryPath != null
-                    ? ListTile(
-                      title: Text('Directory path'),
-                      subtitle: Text(_directoryPath),
-                    )
-                    : _path != null
-                        ? Container(
-                            padding: const EdgeInsets.only(bottom: 30.0),
-                            height:
-                                MediaQuery.of(context).size.height * 0.50,
-                            child: Scrollbar(
-                                child: ListView.separated(
-                              itemCount: 1,
-                              itemBuilder:
-                                (BuildContext context, int index) {
-                                  final String name = 'File ' + _fileName ?? '...';
-
-                                  return ListTile(title: Text(name));
-                                },
-                                separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                    const Divider(),
-                              )
-                            ),
-                          )
-                        : const SizedBox(),
-                ),
               ],
             ),
           ),
