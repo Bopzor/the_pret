@@ -19,11 +19,11 @@ class ImportScreen extends StatefulWidget {
 class _ImportScreenState extends State<ImportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _fileName;
-  List<PlatformFile> _paths;
+  PlatformFile _path;
   String _directoryPath;
   bool _loadingPath = false;
-  FileType _pickingType = FileType.custom;
   dynamic _teasList;
+  String _error;
 
   @override
   void initState() {
@@ -34,12 +34,12 @@ class _ImportScreenState extends State<ImportScreen> {
     setState(() => _loadingPath = true);
     try {
       _directoryPath = null;
-      _paths = (await FilePicker.platform.pickFiles(
-        type: _pickingType,
+      _path = (await FilePicker.platform.pickFiles(
+        type: FileType.custom,
         allowMultiple: false,
         allowedExtensions: ['.json'],
       ))
-        ?.files;
+        ?.files?.single;
     } on PlatformException catch (e) {
       print("Unsupported operation" + e.toString());
     } catch (ex) {
@@ -48,10 +48,10 @@ class _ImportScreenState extends State<ImportScreen> {
     if (!mounted) return;
     setState(() {
       _loadingPath = false;
-      _fileName = _paths != null ? _paths.map((e) => e.name).toString() : '...';
+      _fileName = _path != null ? _path.path : '...';
     });
 
-    if (_paths != null) {
+    if (_fileName != null) {
       readFile();
     }
   }
@@ -62,7 +62,7 @@ class _ImportScreenState extends State<ImportScreen> {
 
   Future<void> readFile() async {
     try {
-      final file = File(_paths[0].path);
+      final file = File(_fileName);
       String content = await file.readAsString();
       List<dynamic> teas = JsonDecoder().convert(content);
       List<String> missing = [];
@@ -109,6 +109,8 @@ class _ImportScreenState extends State<ImportScreen> {
 
       if (missing.length <= 0) {
         setState(() => _teasList = teasList);
+      } else {
+        setState(() => _error = 'Invalid file');
       }
     } catch (e) {
       print(e.toString());
@@ -161,17 +163,14 @@ class _ImportScreenState extends State<ImportScreen> {
                       title: Text('Directory path'),
                       subtitle: Text(_directoryPath),
                     )
-                    : _paths != null
+                    : _path != null
                         ? Container(
                             padding: const EdgeInsets.only(bottom: 30.0),
                             height:
                                 MediaQuery.of(context).size.height * 0.50,
                             child: Scrollbar(
                                 child: ListView.separated(
-                              itemCount:
-                                _paths != null && _paths.isNotEmpty
-                                  ? _paths.length
-                                  : 1,
+                              itemCount: 1,
                               itemBuilder:
                                 (BuildContext context, int index) {
                                   final String name = 'File ' + _fileName ?? '...';

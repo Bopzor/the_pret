@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:the_pret_flutter/ImportScreen.dart';
 import 'package:the_pret_flutter/UpsertScreen.dart';
 import 'package:the_pret_flutter/TeaCard.dart';
+import 'package:the_pret_flutter/data/FileStorage.dart';
 import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
 import 'package:the_pret_flutter/TeaScreen.dart';
 import 'package:the_pret_flutter/UnknownScreen.dart';
@@ -16,21 +17,22 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final LocalKeyValuePersistence storage = LocalKeyValuePersistence();
-  List<dynamic> teaList = [];
+  final LocalKeyValuePersistence persistence = LocalKeyValuePersistence();
+  final FileStorage storage = FileStorage();
+  List<dynamic> teasList = [];
   String title = 'Thé Prêt ?';
   bool displayArchived = false;
 
   void initState() {
     super.initState();
 
-    storage.getObject().then((response) {
+    storage.readFile().then((response) {
       setState(() {
-        teaList = response ?? [];
+        teasList = response ?? [];
       });
     });
 
-    storage.getString().then((value) {
+    persistence.getString().then((value) {
       setState(() => displayArchived = value == 'true' ? true : false);
     });
 
@@ -38,56 +40,56 @@ class _AppState extends State<App> {
 
   void saveTea(Map<String, dynamic> tea) {
     setState(() {
-      teaList.add(tea);
+      teasList.add(tea);
     });
 
-    storage.saveObject(teaList);
+    storage.writeFile(teasList);
   }
 
   void updateTea(Map<String, dynamic> tea) {
-    int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
+    int idx = teasList.indexWhere((element) => element['id'] == tea['id']);
     print(idx);
     setState(() {
-      teaList.replaceRange(idx, idx + 1, [tea]);
+      teasList.replaceRange(idx, idx + 1, [tea]);
     });
 
-    storage.saveObject(teaList);
+    storage.writeFile(teasList);
   }
 
   void archiveTea(Map<String, dynamic> tea) {
-    int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
+    int idx = teasList.indexWhere((element) => element['id'] == tea['id']);
 
     tea['archived'] = !tea['archived'];
 
     setState(() {
-      teaList.replaceRange(idx, idx + 1, [tea]);
+      teasList.replaceRange(idx, idx + 1, [tea]);
     });
 
-    storage.saveObject(teaList);
+    storage.writeFile(teasList);
   }
 
   void removeTea(Map<String, dynamic> tea) {
-    int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
+    int idx = teasList.indexWhere((element) => element['id'] == tea['id']);
 
     setState(() {
-      teaList.replaceRange(idx, idx + 1, []);
+      teasList.replaceRange(idx, idx + 1, []);
     });
 
-    storage.saveObject(teaList);
+    storage.writeFile(teasList);
   }
 
   void updateDisplayArchived(bool value) {
     setState(() => displayArchived = value);
 
-    storage.saveString(value.toString());
+    persistence.saveString(value.toString());
   }
 
   void mergeTeas(dynamic teas) {
     setState(() {
-      teaList.addAll(teas);
+      teasList.addAll(teas);
     });
 
-    storage.saveObject(teaList);
+    storage.writeFile(teasList);
   }
 
   @override
@@ -101,7 +103,7 @@ class _AppState extends State<App> {
               return MyHomePage(
                 title: this.title,
                 saveTea: this.saveTea,
-                teaList: this.teaList,
+                teasList: this.teasList,
                 displayArchived: this.displayArchived,
                 updateDisplayArchived: this.updateDisplayArchived,
               );
@@ -121,8 +123,8 @@ class _AppState extends State<App> {
 
         if (uri.pathSegments.length == 2) {
           String id = uri.pathSegments[1];
-          int idx = teaList.indexWhere((t) => t['id'] == id);
-          dynamic tea = teaList[idx];
+          int idx = teasList.indexWhere((t) => t['id'] == id);
+          dynamic tea = teasList[idx];
 
           if (uri.pathSegments.first == 'tea') {
             return MaterialPageRoute(builder: (context) => TeaScreen(tea: tea, archiveTea: archiveTea, removeTea: removeTea));
@@ -143,7 +145,7 @@ class _AppState extends State<App> {
       home: MyHomePage(
         title: title,
         saveTea: this.saveTea,
-        teaList: this.teaList,
+        teasList: this.teasList,
         displayArchived: this.displayArchived,
         updateDisplayArchived: this.updateDisplayArchived,
       ),
@@ -152,11 +154,11 @@ class _AppState extends State<App> {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.saveTea, this.teaList, this.displayArchived, this.updateDisplayArchived}) : super(key: key);
+  MyHomePage({Key key, this.title, this.saveTea, this.teasList, this.displayArchived, this.updateDisplayArchived}) : super(key: key);
 
   final String title;
   final Function saveTea;
-  final List<dynamic> teaList;
+  final List<dynamic> teasList;
   final bool displayArchived;
   final Function updateDisplayArchived;
 
@@ -175,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool isMatchingTea(Map<String, dynamic> tea) {
-    print(widget.teaList);
+    print(widget.teasList);
     String brandName = tea['name'] + ' ' + tea['brand'];
 
     if (showSearchbar == false || search.text == '') {
@@ -297,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           direction: Axis.horizontal,
                           alignment: WrapAlignment.start,
                           children: [
-                            ...widget.teaList.where((tea) => isMatchingTea(tea))
+                            ...widget.teasList.where((tea) => isMatchingTea(tea))
                               .map((tea) => TeaCard(tea: tea)).toList(),
                           ],
                         ),
