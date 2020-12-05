@@ -272,6 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ListTile(
               title: Text('Import tea list from file'),
+              leading: Icon(Icons.upload_file),
               onTap: () {
                 Navigator.of(context).pushNamed('/import');
               },

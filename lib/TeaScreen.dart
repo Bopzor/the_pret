@@ -16,7 +16,7 @@ class TeaScreen extends StatelessWidget {
       return EdgeInsets.all(0);
     }
 
-    return EdgeInsets.only(bottom: 60, top: 20, right: 20, left: 20);
+    return EdgeInsets.only(bottom: 20, top: 20, right: 20, left: 20);
   }
 
   SpeedDial buildSpeedDial(context) {

@@ -92,153 +92,165 @@ class _UpsertScreenState extends State<UpsertScreen> {
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  style: TextStyle(fontSize: 30),
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints viewportConstraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: viewportConstraints.maxHeight,
                   ),
-                ),
-                TextFormField(
-                  style: TextStyle(fontSize: 30),
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: _brandController,
-                  decoration: InputDecoration(
-                    labelText: 'Brand',
-                  ),
-                ),
-                Container(
-                  width: 80,
-                  child: TextFormField(
-                    style: TextStyle(fontSize: 30),
-                    textCapitalization: TextCapitalization.sentences,
-                    controller: _tempController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(3)
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'Temp',
-                      suffixText: '°C',
-                      isDense: true,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextFormField(
+                          style: TextStyle(fontSize: 30),
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Name',
+                          ),
+                        ),
+                        TextFormField(
+                          style: TextStyle(fontSize: 30),
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: _brandController,
+                          decoration: InputDecoration(
+                            labelText: 'Brand',
+                          ),
+                        ),
+                        Container(
+                          width: 80,
+                          child: TextFormField(
+                            style: TextStyle(fontSize: 30),
+                            textCapitalization: TextCapitalization.sentences,
+                            controller: _tempController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(3)
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'Temp',
+                              suffixText: '°C',
+                              isDense: true,
+                            ),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: EdgeInsets.only(top: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Time', style: TextStyle(fontSize: 30, color: Colors.grey[700])),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    constraints: BoxConstraints(maxWidth: 100),
+                                    child: CupertinoPicker(
+                                      scrollController: FixedExtentScrollController(initialItem: getInitialMinutes()),
+                                      itemExtent: 50, //height of each item
+                                      looping: true,
+                                      onSelectedItemChanged: (int index) {
+                                        setState(() {
+                                          _minutes = minutesOptions[index];
+                                        });
+                                      },
+                                      children: <Widget>[
+                                        ...minutesOptions.map((options) {
+                                          return (
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
+                                            )
+                                          );
+                                      })],
+                                    ),
+                                  ),
+                                  Container(
+                                    constraints: BoxConstraints(maxWidth: 100),
+                                    child: CupertinoPicker(
+                                      scrollController: FixedExtentScrollController(initialItem: getInitialSeconds()),
+                                      itemExtent: 50, //height of each item
+                                      looping: true,
+                                      onSelectedItemChanged: (int index) {
+                                        setState(() {
+                                          _seconds = secondsOptions[index];
+                                        });
+                                      },
+                                      children: <Widget>[
+                                        ...secondsOptions.map((options) {
+                                          return (
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
+                                            )
+                                          );
+                                      })],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(top: 30.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 50,
+                                width: 100,
+                                child:ElevatedButton(
+                                  onPressed: isButtonDisabled ? null : () {
+                                    Map<String, dynamic> tea = {
+                                      'id': Uuid().v4(),
+                                      'name': _nameController.text,
+                                      'brand': _brandController.text,
+                                      'temperature': _tempController.text,
+                                      'time': {
+                                        'minutes': _minutes,
+                                        'seconds': _seconds,
+                                      },
+                                      'count': 0,
+                                      'archived': false,
+                                    };
+
+                                    if (widget.tea != null) {
+                                      tea['id'] = widget.tea['id'];
+                                      tea['archived'] = widget.tea['archived'];
+                                    }
+
+                                    widget.saveTea(tea);
+
+                                    if (widget.tea != null) {
+                                      Navigator.of(context).pushNamedAndRemoveUntil('/tea/' + widget.tea['id'], (Route<dynamic> route) =>  route.settings.name == '/');
+                                    } else {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Text('Save', style: TextStyle(fontSize: 30)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                 ),
-
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Time', style: TextStyle(fontSize: 30, color: Colors.grey[700])),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            constraints: BoxConstraints(maxWidth: 100),
-                            child: CupertinoPicker(
-                              scrollController: FixedExtentScrollController(initialItem: getInitialMinutes()),
-                              itemExtent: 50, //height of each item
-                              looping: true,
-                              onSelectedItemChanged: (int index) {
-                                setState(() {
-                                  _minutes = minutesOptions[index];
-                                });
-                              },
-                              children: <Widget>[
-                                ...minutesOptions.map((options) {
-                                  return (
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
-                                    )
-                                  );
-                              })],
-                            ),
-                          ),
-                          Container(
-                            constraints: BoxConstraints(maxWidth: 100),
-                            child: CupertinoPicker(
-                              scrollController: FixedExtentScrollController(initialItem: getInitialSeconds()),
-                              itemExtent: 50, //height of each item
-                              looping: true,
-                              onSelectedItemChanged: (int index) {
-                                setState(() {
-                                  _seconds = secondsOptions[index];
-                                });
-                              },
-                              children: <Widget>[
-                                ...secondsOptions.map((options) {
-                                  return (
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
-                                    )
-                                  );
-                              })],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 50,
-                        width: 100,
-                        child:ElevatedButton(
-                          onPressed: isButtonDisabled ? null : () {
-                            Map<String, dynamic> tea = {
-                              'id': Uuid().v4(),
-                              'name': _nameController.text,
-                              'brand': _brandController.text,
-                              'temperature': _tempController.text,
-                              'time': {
-                                'minutes': _minutes,
-                                'seconds': _seconds,
-                              },
-                              'count': 0,
-                              'archived': false,
-                            };
-
-                            if (widget.tea != null) {
-                              tea['id'] = widget.tea['id'];
-                              tea['archived'] = widget.tea['archived'];
-                            }
-
-                            widget.saveTea(tea);
-
-                            if (widget.tea != null) {
-                              Navigator.of(context).pushNamedAndRemoveUntil('/tea/' + widget.tea['id'], (Route<dynamic> route) =>  route.settings.name == '/');
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Text('Save', style: TextStyle(fontSize: 30)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+              );
+            }
+          )
         ),
       ),
     );
