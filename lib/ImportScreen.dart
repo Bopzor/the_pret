@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -22,6 +23,7 @@ class _ImportScreenState extends State<ImportScreen> {
   String _directoryPath;
   bool _loadingPath = false;
   FileType _pickingType = FileType.custom;
+  dynamic _teasList;
 
   @override
   void initState() {
@@ -35,7 +37,7 @@ class _ImportScreenState extends State<ImportScreen> {
       _paths = (await FilePicker.platform.pickFiles(
         type: _pickingType,
         allowMultiple: false,
-        allowedExtensions: ['.thepret'],
+        allowedExtensions: ['.json'],
       ))
         ?.files;
     } on PlatformException catch (e) {
@@ -62,8 +64,52 @@ class _ImportScreenState extends State<ImportScreen> {
     try {
       final file = File(_paths[0].path);
       String content = await file.readAsString();
+      List<dynamic> teas = JsonDecoder().convert(content);
+      List<String> missing = [];
 
-      print(content);
+      Iterable<Map<String, dynamic>> teasList = teas.map((element) {
+        for (String key in ['id', 'name', 'brand', 'temperature', 'time']) {
+          if (!element.keys.contains(key)) {
+            missing.add(key);
+          }
+        }
+
+        Map<String, dynamic> tea = {
+          'id': element['id'],
+          'name': element['name'],
+          'brand': element['brand'],
+          'archived': element['archived'],
+          'count': element['count'],
+          'time': element['time'],
+        };
+
+        if (!element.containsKey('count')) {
+          tea['count'] = 0;
+        }
+
+        if (!element.containsKey('archived')) {
+          tea['archived'] = false;
+        }
+
+        if (element['time']['minutes'] is String) {
+          tea['time']['minutes'] = int.parse(element['time']['minutes']);
+        }
+
+        if (element['time']['seconds'] is String) {
+          tea['time']['seconds'] = int.parse(element['time']['seconds']);
+        }
+
+        if (element['temperature'] is int) {
+          tea['temperature'] = element['temperature'].toString();
+        }
+
+        return tea;
+      });
+
+
+      if (missing.length <= 0) {
+        setState(() => _teasList = teasList);
+      }
     } catch (e) {
       print(e.toString());
 
@@ -94,8 +140,12 @@ class _ImportScreenState extends State<ImportScreen> {
                       child: Text("Open file picker"),
                     ),
                     RaisedButton(
+                      onPressed: _teasList == null ? null : () => widget.mergeTeas(_teasList),
+                      child: Text("Import"),
+                    ),
+                    RaisedButton(
                       onPressed: () => _clearCachedFiles(),
-                      child: Text("Clear temporary files"),
+                      child: Text("Cancel"),
                     ),
                   ],
                 ),
@@ -124,18 +174,9 @@ class _ImportScreenState extends State<ImportScreen> {
                                   : 1,
                               itemBuilder:
                                 (BuildContext context, int index) {
-                                  final String name = 'File $index: ' + _fileName ?? '...';
-                                  final path = _paths
-                                    .map((e) => e.path)
-                                    .toList()[index]
-                                    .toString();
+                                  final String name = 'File ' + _fileName ?? '...';
 
-                                  return ListTile(
-                                    title: Text(
-                                      name,
-                                    ),
-                                    subtitle: Text(path),
-                                  );
+                                  return ListTile(title: Text(name));
                                 },
                                 separatorBuilder:
                                   (BuildContext context, int index) =>

@@ -33,6 +33,7 @@ class _AppState extends State<App> {
     storage.getString().then((value) {
       setState(() => displayArchived = value == 'true' ? true : false);
     });
+
   }
 
   void saveTea(Map<String, dynamic> tea) {
@@ -56,7 +57,7 @@ class _AppState extends State<App> {
   void archiveTea(Map<String, dynamic> tea) {
     int idx = teaList.indexWhere((element) => element['id'] == tea['id']);
 
-    tea['archive'] = !tea['archive'];
+    tea['archived'] = !tea['archived'];
 
     setState(() {
       teaList.replaceRange(idx, idx + 1, [tea]);
@@ -81,7 +82,7 @@ class _AppState extends State<App> {
     storage.saveString(value.toString());
   }
 
-  void mergeTeas(List<Map<String, dynamic>> teas) {
+  void mergeTeas(dynamic teas) {
     setState(() {
       teaList.addAll(teas);
     });
@@ -173,11 +174,16 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  bool isMatchingTea(tea) {
+  bool isMatchingTea(Map<String, dynamic> tea) {
+    print(widget.teaList);
     String brandName = tea['name'] + ' ' + tea['brand'];
 
     if (showSearchbar == false || search.text == '') {
-      if (tea['archive'] && widget.displayArchived == false) {
+      if (!tea.containsKey('archived')) {
+        return true;
+      }
+
+      if (tea['archived'] && widget.displayArchived == false) {
         return false;
       }
 

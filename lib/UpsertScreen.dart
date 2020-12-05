@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
 
 class UpsertScreen extends StatefulWidget {
   UpsertScreen({Key key, this.title, this.saveTea, this.tea }) : super(key: key);
@@ -82,11 +83,6 @@ class _UpsertScreenState extends State<UpsertScreen> {
     }
 
     return 0;
-  }
-
-  String buildId() {
-    return _nameController.text.replaceAll(' ', '-').toLowerCase()
-      + '-' + _brandController.text.replaceAll(' ', '-').toLowerCase();
   }
 
   @override
@@ -209,7 +205,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                         child:ElevatedButton(
                           onPressed: isButtonDisabled ? null : () {
                             Map<String, dynamic> tea = {
-                              'id': buildId(),
+                              'id': Uuid().v4(),
                               'name': _nameController.text,
                               'brand': _brandController.text,
                               'temperature': _tempController.text,
@@ -218,12 +214,12 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                 'seconds': _seconds,
                               },
                               'count': 0,
-                              'archive': false,
+                              'archived': false,
                             };
 
                             if (widget.tea != null) {
                               tea['id'] = widget.tea['id'];
-                              tea['archive'] = widget.tea['archive'];
+                              tea['archived'] = widget.tea['archived'];
                             }
 
                             widget.saveTea(tea);
