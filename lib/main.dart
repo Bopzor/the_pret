@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_pret_flutter/ImportScreen.dart';
 import 'package:the_pret_flutter/UpsertScreen.dart';
 import 'package:the_pret_flutter/TeaCard.dart';
 import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
@@ -30,7 +31,7 @@ class _AppState extends State<App> {
     });
 
     storage.getString().then((value) {
-      setState(() => displayArchived = value ?? false);
+      setState(() => displayArchived = value == 'true' ? true : false);
     });
   }
 
@@ -80,6 +81,14 @@ class _AppState extends State<App> {
     storage.saveString(value.toString());
   }
 
+  void mergeTeas(List<Map<String, dynamic>> teas) {
+    setState(() {
+      teaList.addAll(teas);
+    });
+
+    storage.saveObject(teaList);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -99,9 +108,12 @@ class _AppState extends State<App> {
           );
         }
 
-        // Handle '/add'
         if (settings.name == '/add') {
           return MaterialPageRoute(builder: (context) => UpsertScreen(title: title, saveTea: this.saveTea));
+        }
+
+        if (settings.name == '/import') {
+          return MaterialPageRoute(builder: (context) => ImportScreen(title: title, mergeTeas: this.mergeTeas));
         }
 
         Uri uri = Uri.parse(settings.name);
@@ -250,6 +262,12 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               secondary: Icon(Icons.archive),
             ),
+            ListTile(
+              title: Text('Import tea list from file'),
+              onTap: () {
+                Navigator.of(context).pushNamed('/import');
+              },
+            )
           ],
         ),
       ),
@@ -288,7 +306,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/add');
+          Navigator.of(context).pushNamed('/add');
         },
         tooltip: 'Add tea',
         child: Icon(Icons.add),

@@ -39,7 +39,7 @@ class LocalKeyValuePersistence implements Repository {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString('display-archived');
     if (value != null)
-      return JsonDecoder().convert(value) as String;
+      return value;
     return null;
   }
 
