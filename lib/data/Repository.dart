@@ -4,4 +4,10 @@ abstract class Repository {
   Future<List<dynamic>> getObject();
 
   Future<void> removeObject();
+
+  void saveString(String string);
+
+  Future<String> getString();
+
+  Future<void> removeString();
 }

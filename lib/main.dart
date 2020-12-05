@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:the_pret_flutter/UpsertScreen.dart';
 import 'package:the_pret_flutter/TeaCard.dart';
 import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
-import 'package:the_pret_flutter/data/TeaScreen.dart';
-import 'package:the_pret_flutter/data/UnknownScreen.dart';
+import 'package:the_pret_flutter/TeaScreen.dart';
+import 'package:the_pret_flutter/UnknownScreen.dart';
 
 void main() async {
   runApp(App());
@@ -17,6 +17,8 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   final LocalKeyValuePersistence storage = LocalKeyValuePersistence();
   List<dynamic> teaList = [];
+  String title = 'Thé Prêt ?';
+  bool displayArchived = false;
 
   void initState() {
     super.initState();
@@ -25,6 +27,10 @@ class _AppState extends State<App> {
       setState(() {
         teaList = response ?? [];
       });
+    });
+
+    storage.getString().then((value) {
+      setState(() => displayArchived = value ?? false);
     });
   }
 
@@ -68,6 +74,12 @@ class _AppState extends State<App> {
     storage.saveObject(teaList);
   }
 
+  void updateDisplayArchived(bool value) {
+    setState(() => displayArchived = value);
+
+    storage.saveString(value.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -75,13 +87,21 @@ class _AppState extends State<App> {
         // Handle '/'
         if (settings.name == '/') {
           return MaterialPageRoute(
-            builder: (context) => MyHomePage(title: 'Thé Prêt', saveTea: this.saveTea, teaList: this.teaList),
+            builder: (context) {
+              return MyHomePage(
+                title: this.title,
+                saveTea: this.saveTea,
+                teaList: this.teaList,
+                displayArchived: this.displayArchived,
+                updateDisplayArchived: this.updateDisplayArchived,
+              );
+            }
           );
         }
 
         // Handle '/add'
         if (settings.name == '/add') {
-          return MaterialPageRoute(builder: (context) => UpsertScreen(title: 'Thé Prêt', saveTea: this.saveTea));
+          return MaterialPageRoute(builder: (context) => UpsertScreen(title: title, saveTea: this.saveTea));
         }
 
         Uri uri = Uri.parse(settings.name);
@@ -96,28 +116,36 @@ class _AppState extends State<App> {
           }
 
           if (uri.pathSegments.first == 'edit') {
-            return MaterialPageRoute(builder: (context) => UpsertScreen(title: 'Thé Prêt', saveTea: this.updateTea, tea: tea));
+            return MaterialPageRoute(builder: (context) => UpsertScreen(title: title, saveTea: this.updateTea, tea: tea));
           }
 
         }
 
         return MaterialPageRoute(builder: (context) => UnknownScreen());
       },
-      title: 'Thé Prêt',
+      title: title,
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: MyHomePage(title: 'Thé Prêt', saveTea: this.saveTea, teaList: this.teaList),
+      home: MyHomePage(
+        title: title,
+        saveTea: this.saveTea,
+        teaList: this.teaList,
+        displayArchived: this.displayArchived,
+        updateDisplayArchived: this.updateDisplayArchived,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.saveTea, this.teaList}) : super(key: key);
+  MyHomePage({Key key, this.title, this.saveTea, this.teaList, this.displayArchived, this.updateDisplayArchived}) : super(key: key);
 
   final String title;
   final Function saveTea;
   final List<dynamic> teaList;
+  final bool displayArchived;
+  final Function updateDisplayArchived;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -137,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String brandName = tea['name'] + ' ' + tea['brand'];
 
     if (showSearchbar == false || search.text == '') {
-      if (tea['archive']) {
+      if (tea['archive'] && widget.displayArchived == false) {
         return false;
       }
 
@@ -205,6 +233,25 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              child: Text(widget.title, style: TextStyle(fontSize:  20, color: Colors.white)),
+              decoration: BoxDecoration(color: Theme.of(context).accentColor),
+            ),
+            SwitchListTile(
+              title: Text('Display archived teas in list'),
+              value: widget.displayArchived,
+              onChanged: (bool value) {
+                widget.updateDisplayArchived(value);
+              },
+              secondary: Icon(Icons.archive),
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Padding(

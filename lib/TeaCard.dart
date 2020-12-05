@@ -90,11 +90,7 @@ class TeaCard extends StatelessWidget {
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.white.withOpacity(0.7), Colors.black.withOpacity(0.7)],
-                      ),
+                      color: Colors.white.withOpacity(0.7)
                     ),
                     child: Icon(Icons.archive),
                   ),

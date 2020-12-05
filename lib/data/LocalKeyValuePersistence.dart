@@ -28,4 +28,25 @@ class LocalKeyValuePersistence implements Repository {
     prefs.remove(key);
   }
 
+  @override
+  void saveString(String string) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('display-archived', string);
+  }
+
+  @override
+  Future<String> getString() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString('display-archived');
+    if (value != null)
+      return JsonDecoder().convert(value) as String;
+    return null;
+  }
+
+  @override
+  Future<void> removeString() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('display-archived');
+  }
+
 }
