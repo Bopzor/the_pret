@@ -22,6 +22,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
   int _seconds = 0;
   List<int> minutesOptions = [1, 2, 3, 4, 5, 6];
   List<int> secondsOptions = [0, 15, 30, 45];
+  bool isButtonDisabled = true;
 
   @override
   void initState() {
@@ -34,8 +35,14 @@ class _UpsertScreenState extends State<UpsertScreen> {
         _tempController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['temperature']));
         _minutes = widget.tea['time']['minutes'];
         _seconds = widget.tea['time']['seconds'];
+        isButtonDisabled = false;
       });
     }
+
+    _nameController.addListener(() => checkEmptyInput());
+    _brandController.addListener(() => checkEmptyInput());
+    _tempController.addListener(() => checkEmptyInput());
+
   }
 
   void dispose() {
@@ -43,6 +50,22 @@ class _UpsertScreenState extends State<UpsertScreen> {
     _brandController.dispose();
     _tempController.dispose();
     super.dispose();
+  }
+
+  void checkEmptyInput() {
+    List<String> values = [
+      _nameController.text,
+      _brandController.text,
+      _tempController.text,
+      _minutes.toString(),
+      _seconds.toString()
+    ];
+
+    if (values.any((element) => element.isEmpty)) {
+      setState(() => isButtonDisabled = true);
+    } else {
+      setState(() => isButtonDisabled = false);
+    }
   }
 
   int getInitialMinutes() {
@@ -102,7 +125,10 @@ class _UpsertScreenState extends State<UpsertScreen> {
                     textCapitalization: TextCapitalization.sentences,
                     controller: _tempController,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [LengthLimitingTextInputFormatter(3)],
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(3)
+                    ],
                     decoration: InputDecoration(
                       labelText: 'Temp',
                       suffixText: '°C',
@@ -181,7 +207,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                         height: 50,
                         width: 100,
                         child:ElevatedButton(
-                          onPressed: () {
+                          onPressed: isButtonDisabled ? null : () {
                             Map<String, dynamic> tea = {
                               'id': buildId(),
                               'name': _nameController.text,
