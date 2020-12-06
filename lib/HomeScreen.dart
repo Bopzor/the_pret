@@ -120,9 +120,18 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Text(
-                AppLocalizations.of(context).translate('title'),
-                style: TextStyle(fontSize:  20, color: Colors.white),
+              child:
+                Stack(
+                  children: [
+                    Image.asset('logo.png'),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Text(
+                        AppLocalizations.of(context).translate('title'),
+                        style: TextStyle(fontSize:  20, color: Colors.white),
+                      ),
+                    ),
+                  ],
               ),
               decoration: BoxDecoration(color: Theme.of(context).accentColor),
             ),

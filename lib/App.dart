@@ -156,6 +156,7 @@ class _AppState extends State<App> {
       },
       theme: ThemeData(
         primarySwatch: Colors.green,
+        fontFamily: 'Lato'
       ),
       home: HomeScreen(
         saveTea: this.saveTea,
