@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:the_pret_flutter/adaptive_font_size.dart';
 import 'package:the_pret_flutter/app_localization.dart';
 import 'package:the_pret_flutter/Timer.dart';
 
@@ -97,7 +98,7 @@ class TeaScreen extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 tea['name'],
-                                style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -116,15 +117,15 @@ class TeaScreen extends StatelessWidget {
                         ],
                       ),
                       TimerWidget(
+                        cbAtEnd: () => updateTea({...tea, 'count': tea['count'] + 1}),
                         minutes: tea['time']['minutes'],
                         seconds: tea['time']['seconds'],
-                        cbAtEnd: updateTea({...tea, 'count': tea['count'] + 1}),
                       ),
                       RichText(
                         text: TextSpan(children: [
                           TextSpan(
                             text: tea['temperature'],
-                            style: TextStyle(fontSize: 60, color: Colors.black)
+                            style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), color: Colors.black)
                           ),
                           WidgetSpan(
                             child: Transform.translate(

@@ -52,6 +52,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return false;
   }
 
+  List<dynamic> sortedList() {
+    List<dynamic> list = widget.teasList;
+
+    list.sort((a, b) => int.parse(a['count']).compareTo(int.parse(b['count'])));
+
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,7 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           direction: Axis.horizontal,
                           alignment: WrapAlignment.start,
                           children: [
-                            ...widget.teasList.where((tea) => isMatchingTea(tea))
+                            ...sortedList()
+                              .where((tea) => isMatchingTea(tea)).toList()
                               .map((tea) => TeaCard(tea: tea)).toList(),
                           ],
                         ),

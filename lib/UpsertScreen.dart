@@ -122,143 +122,143 @@ class _UpsertScreenState extends State<UpsertScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context).translate('title'))),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints viewportConstraints) {
-              return SingleChildScrollView(
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: viewportConstraints.maxHeight,
-                  ),
-                  child:  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      TextFormField(
-                        style: TextStyle(fontSize: 30),
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context).translate('name'),
-                        ),
-                      ),
-                      TextFormField(
-                        style: TextStyle(fontSize: 30),
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: _brandController,
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context).translate('brand'),
-                        ),
-                      ),
-                      Container(
-                        width: 80,
-                        child: TextFormField(
-                          style: TextStyle(fontSize: 30),
-                          textCapitalization: TextCapitalization.sentences,
-                          controller: _tempController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(3)
-                          ],
-                          decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context).translate('temp'),
-                            suffixText: '°C',
-                            isDense: true,
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context).translate('time'),
-                              style: TextStyle(fontSize: 30, color: Colors.grey[700])
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  constraints: BoxConstraints(maxWidth: 100),
-                                  child: CupertinoPicker(
-                                    scrollController: FixedExtentScrollController(initialItem: getInitialMinutes()),
-                                    itemExtent: 50, //height of each item
-                                    looping: true,
-                                    onSelectedItemChanged: (int index) {
-                                      setState(() {
-                                        _minutes = minutesOptions[index];
-                                      });
-                                    },
-                                    children: <Widget>[
-                                      ...minutesOptions.map((options) {
-                                        return (
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
-                                          )
-                                        );
-                                    })],
-                                  ),
-                                ),
-                                Container(
-                                  constraints: BoxConstraints(maxWidth: 100),
-                                  child: CupertinoPicker(
-                                    scrollController: FixedExtentScrollController(initialItem: getInitialSeconds()),
-                                    itemExtent: 50, //height of each item
-                                    looping: true,
-                                    onSelectedItemChanged: (int index) {
-                                      setState(() {
-                                        _seconds = secondsOptions[index];
-                                      });
-                                    },
-                                    children: <Widget>[
-                                      ...secondsOptions.map((options) {
-                                        return (
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
-                                          )
-                                        );
-                                    })],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.only(top: 30.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 50,
-                              child:ElevatedButton(
-                                onPressed: isButtonDisabled ? null : () {
-                                  onSaveTea();
-                                },
-                                child: Text(AppLocalizations.of(context).translate('save'), style: TextStyle(fontSize: 30)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                constraints: BoxConstraints(
+                  minHeight: viewportConstraints.maxHeight,
                 ),
-              );
-            }
-          )
-        ),
+                child:  Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextFormField(
+                      style: TextStyle(fontSize: 30),
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).translate('name'),
+                      ),
+                    ),
+                    TextFormField(
+                      style: TextStyle(fontSize: 30),
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: _brandController,
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).translate('brand'),
+                      ),
+                    ),
+                    Container(
+                      width: 80,
+                      child: TextFormField(
+                        style: TextStyle(fontSize: 30),
+                        textCapitalization: TextCapitalization.sentences,
+                        controller: _tempController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3)
+                        ],
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context).translate('temp'),
+                          suffixText: '°C',
+                          isDense: true,
+                        ),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context).translate('time'),
+                            style: TextStyle(fontSize: 30, color: Colors.grey[700])
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                constraints: BoxConstraints(maxWidth: 100),
+                                child: CupertinoPicker(
+                                  scrollController: FixedExtentScrollController(initialItem: getInitialMinutes()),
+                                  itemExtent: 50, //height of each item
+                                  looping: true,
+                                  onSelectedItemChanged: (int index) {
+                                    setState(() {
+                                      _minutes = minutesOptions[index];
+                                    });
+                                  },
+                                  children: <Widget>[
+                                    ...minutesOptions.map((options) {
+                                      return (
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
+                                        )
+                                      );
+                                  })],
+                                ),
+                              ),
+                              Container(
+                                constraints: BoxConstraints(maxWidth: 100),
+                                child: CupertinoPicker(
+                                  scrollController: FixedExtentScrollController(initialItem: getInitialSeconds()),
+                                  itemExtent: 50, //height of each item
+                                  looping: true,
+                                  onSelectedItemChanged: (int index) {
+                                    setState(() {
+                                      _seconds = secondsOptions[index];
+                                    });
+                                  },
+                                  children: <Widget>[
+                                    ...secondsOptions.map((options) {
+                                      return (
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
+                                        )
+                                      );
+                                  })],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 50,
+                            child:ElevatedButton(
+                              onPressed: isButtonDisabled ? null : () {
+                                onSaveTea();
+                              },
+                              child: Text(AppLocalizations.of(context).translate('save'), style: TextStyle(fontSize: 30)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ),
+            ),
+          );
+        }
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:the_pret_flutter/adaptive_font_size.dart';
 
 Isolate isolate;
 Capability resumeCapability = new Capability();
@@ -102,7 +103,7 @@ class _TimerState extends State<TimerWidget> {
         });
 
         runAlarm();
-        widget.cbAtEnd();
+        widget?.cbAtEnd();
         stop();
         return;
       }
@@ -168,30 +169,41 @@ class _TimerState extends State<TimerWidget> {
     return Icon(Icons.pause);
   }
 
-  List<Widget> displayTime() {
+  List<Widget> displayTime(BuildContext context) {
     int min = (time ~/ 60);
     int sec = time % 60;
 
     List<Widget> texts = [];
+    TextStyle style = TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 90), fontWeight: FontWeight.bold);
 
-    texts.add(Text((min).toString(), style: TextStyle(fontSize: 90, fontWeight: FontWeight.bold),));
-    texts.add(Text(':', style: TextStyle(fontSize: 90, fontWeight: FontWeight.bold)));
-    texts.add(Text((sec).toString().padLeft(2, '0'), style: TextStyle(fontSize: 90, fontWeight: FontWeight.bold)));
+    texts.addAll([
+      Text((min).toString(), style: style),
+      Text(':', style: style),
+      Text((sec).toString().padLeft(2, '0'), style: style),
+    ]);
 
     return texts;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 250,
-      width: 250,
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.7,
+      height: MediaQuery.of(context).size.width * 0.7,
+      constraints: BoxConstraints(
+        minHeight: 100,
+        minWidth: 100,
+      ),
       child: Stack(
         children: [
           Center(
             child: Container(
-              width: 250,
-              height: 250,
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.width * 0.7,
+              constraints: BoxConstraints(
+                minHeight: 100,
+                minWidth: 100,
+              ),
               child:
                 CircularProgressIndicator(
                   value: percentage,
@@ -205,7 +217,7 @@ class _TimerState extends State<TimerWidget> {
           Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [...displayTime()],
+              children: [...displayTime(context)],
             ),
           ),
 
@@ -215,7 +227,7 @@ class _TimerState extends State<TimerWidget> {
               padding: EdgeInsets.only(bottom: 20.0),
               child: IconButton(
                 icon: displayIcon(),
-                iconSize: 60.0,
+                iconSize: AdaptiveFontSize().getadaptiveTextSize(context, 60.0),
                 onPressed: () {
                   if (alarm) {
                     stopMusic();
