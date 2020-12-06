@@ -144,12 +144,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints viewportConstraints) {
-              return SingleChildScrollView(
+
+      body:  LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: viewportConstraints.maxHeight,
@@ -173,11 +174,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-              );
-            }
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed('/add');
