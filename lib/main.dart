@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:the_pret_flutter/AppLanguage.dart';
+import 'package:the_pret_flutter/AppLocalizations.dart';
 import 'package:the_pret_flutter/ImportScreen.dart';
 import 'package:the_pret_flutter/UpsertScreen.dart';
 import 'package:the_pret_flutter/TeaCard.dart';
@@ -8,10 +11,20 @@ import 'package:the_pret_flutter/TeaScreen.dart';
 import 'package:the_pret_flutter/UnknownScreen.dart';
 
 void main() async {
-  runApp(App());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  AppLanguage appLanguage = AppLanguage();
+  await appLanguage.fetchLocale();
+  runApp(App(
+    appLanguage: appLanguage,
+  ));
 }
 
 class App extends StatefulWidget {
+  final AppLanguage appLanguage;
+
+  App({this.appLanguage});
+
   @override
   _AppState createState() => _AppState();
 }
@@ -48,7 +61,7 @@ class _AppState extends State<App> {
 
   void updateTea(Map<String, dynamic> tea) {
     int idx = teasList.indexWhere((element) => element['id'] == tea['id']);
-    print(idx);
+
     setState(() {
       teasList.replaceRange(idx, idx + 1, [tea]);
     });
@@ -95,6 +108,15 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: [
+        Locale('en'),
+        Locale('fr'),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       onGenerateRoute: (settings) {
         // Handle '/'
         if (settings.name == '/') {
@@ -177,7 +199,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool isMatchingTea(Map<String, dynamic> tea) {
-    print(widget.teasList);
     String brandName = tea['name'] + ' ' + tea['brand'];
 
     if (showSearchbar == false || search.text == '') {
@@ -208,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (!showSearchbar)
             IconButton(
               icon: Icon(Icons.search),
-              tooltip: 'Search',
+              tooltip: AppLocalizations.of(context).translate('search'),
               onPressed: () {
                 setState(() {
                   showSearchbar = true;
@@ -263,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: BoxDecoration(color: Theme.of(context).accentColor),
             ),
             SwitchListTile(
-              title: Text('Display archived teas in list'),
+              title: Text(AppLocalizations.of(context).translate('displayArchived')),
               value: widget.displayArchived,
               onChanged: (bool value) {
                 widget.updateDisplayArchived(value);
@@ -271,12 +292,12 @@ class _MyHomePageState extends State<MyHomePage> {
               secondary: Icon(Icons.archive),
             ),
             ListTile(
-              title: Text('Import tea list from file'),
+              title: Text(AppLocalizations.of(context).translate('importFromFile')),
               leading: Icon(Icons.upload_file),
               onTap: () {
                 Navigator.of(context).pushNamed('/import');
               },
-            )
+            ),
           ],
         ),
       ),
@@ -317,7 +338,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.of(context).pushNamed('/add');
         },
-        tooltip: 'Add tea',
+        tooltip: AppLocalizations.of(context).translate('addTea'),
         child: Icon(Icons.add),
       ),
     );

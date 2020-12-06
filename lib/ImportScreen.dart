@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
+import 'package:the_pret_flutter/AppLocalizations.dart';
 
 class ImportScreen extends StatefulWidget {
   ImportScreen({Key key, this.title, this.mergeTeas});
@@ -20,7 +21,6 @@ class _ImportScreenState extends State<ImportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _fileName;
   PlatformFile _path;
-  String _directoryPath;
   bool _loadingPath = false;
   dynamic _teasList;
   String _error;
@@ -33,7 +33,6 @@ class _ImportScreenState extends State<ImportScreen> {
   void _openFileExplorer() async {
     setState(() => _loadingPath = true);
     try {
-      _directoryPath = null;
       _path = (await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowMultiple: false,
@@ -133,25 +132,19 @@ class _ImportScreenState extends State<ImportScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Import data from file: ', style: TextStyle(fontSize: 30),),
               Padding(
                 padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
                 child: Column(
                   children: <Widget>[
                     ElevatedButton(
                       onPressed: () => _openFileExplorer(),
-                      child: Text("Open file picker"),
+                      child: Text(AppLocalizations.of(context).translate('browseFile')),
                     ),
                     Builder(
                       builder: (BuildContext context) => _loadingPath
                         ? Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: const CircularProgressIndicator(),
-                          )
-                        : _directoryPath != null
-                          ? ListTile(
-                            title: Text('Directory path'),
-                            subtitle: Text(_directoryPath),
                           )
                           : _path != null
                             ? Container(
@@ -176,9 +169,12 @@ class _ImportScreenState extends State<ImportScreen> {
                     ),
                     ElevatedButton(
                       onPressed: _teasList == null ? null : () => widget.mergeTeas(_teasList),
-                      child: Text("Import"),
+                      child: Text(AppLocalizations.of(context).translate('import')),
                     ),
-                    Text(_error == null ? '' : _error, style: TextStyle(color: Colors.red[400]),),
+                    Text(
+                      _error == null ? '' : AppLocalizations.of(context).translate('invalidFile'),
+                      style: TextStyle(color: Colors.red[400]),
+                    ),
                   ],
                 ),
               ),

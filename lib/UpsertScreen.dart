@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:the_pret_flutter/AppLocalizations.dart';
 import 'package:uuid/uuid.dart';
 
 class UpsertScreen extends StatefulWidget {
@@ -110,7 +111,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                           textCapitalization: TextCapitalization.sentences,
                           controller: _nameController,
                           decoration: InputDecoration(
-                            labelText: 'Name',
+                            labelText: AppLocalizations.of(context).translate('name'),
                           ),
                         ),
                         TextFormField(
@@ -118,7 +119,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                           textCapitalization: TextCapitalization.sentences,
                           controller: _brandController,
                           decoration: InputDecoration(
-                            labelText: 'Brand',
+                            labelText: AppLocalizations.of(context).translate('brand'),
                           ),
                         ),
                         Container(
@@ -133,7 +134,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                               LengthLimitingTextInputFormatter(3)
                             ],
                             decoration: InputDecoration(
-                              labelText: 'Temp',
+                              labelText: AppLocalizations.of(context).translate('temp'),
                               suffixText: '°C',
                               isDense: true,
                             ),
@@ -145,7 +146,10 @@ class _UpsertScreenState extends State<UpsertScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Time', style: TextStyle(fontSize: 30, color: Colors.grey[700])),
+                              Text(
+                                AppLocalizations.of(context).translate('time'),
+                                style: TextStyle(fontSize: 30, color: Colors.grey[700])
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -208,7 +212,6 @@ class _UpsertScreenState extends State<UpsertScreen> {
                             children: [
                               Container(
                                 height: 50,
-                                width: 100,
                                 child:ElevatedButton(
                                   onPressed: isButtonDisabled ? null : () {
                                     Map<String, dynamic> tea = {
@@ -237,7 +240,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                       Navigator.pop(context);
                                     }
                                   },
-                                  child: Text('Save', style: TextStyle(fontSize: 30)),
+                                  child: Text(AppLocalizations.of(context).translate('save'), style: TextStyle(fontSize: 30)),
                                 ),
                               ),
                             ],

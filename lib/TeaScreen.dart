@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:the_pret_flutter/AppLocalizations.dart';
 import 'package:the_pret_flutter/Timer.dart';
 
 class TeaScreen extends StatelessWidget {
@@ -32,7 +33,7 @@ class TeaScreen extends StatelessWidget {
           onTap: () {
             Navigator.pushNamed(context, '/edit/' + tea['id']);
           },
-          label: 'Edit',
+          label: AppLocalizations.of(context).translate('edit'),
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.amberAccent,
         ),
@@ -43,7 +44,7 @@ class TeaScreen extends StatelessWidget {
             archiveTea(tea);
             Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
           },
-          label: 'Archive',
+          label: AppLocalizations.of(context).translate('archive'),
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.deepOrangeAccent,
         ),
@@ -54,7 +55,7 @@ class TeaScreen extends StatelessWidget {
             removeTea(tea);
             Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
           },
-          label: 'Delete',
+          label: AppLocalizations.of(context).translate('delete'),
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.redAccent,
         ),

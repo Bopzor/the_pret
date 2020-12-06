@@ -1,0 +1,18 @@
+{
+  "title": "Thé Prêt ?",
+  "search": "Rechercher",
+  "displayArchived": "Afficher les thés archivés",
+  "importFromFile": "Importer une liste de thés depuis un fichier",
+  "addTea": "Ajouter un thé",
+  "browseFile": "Ouvrir l'explorateur de fichier",
+  "invalidFile": "Fichier non valide",
+  "import": "Importer",
+  "edit": "Éditer",
+  "archive": "Archiver",
+  "delete": "Supprimer",
+  "name": "Nom",
+  "brand": "Marque",
+  "temp": "Temp",
+  "time": "Durée",
+  "save": "Enregistrer"
+}
