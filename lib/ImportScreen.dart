@@ -5,12 +5,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
-import 'package:the_pret_flutter/AppLocalizations.dart';
+import 'package:the_pret_flutter/app_localization.dart';
 
 class ImportScreen extends StatefulWidget {
-  ImportScreen({Key key, this.title, this.mergeTeas});
+  ImportScreen({Key key, @required this.mergeTeas});
 
-  final String title;
   final Function mergeTeas;
 
   @override
@@ -123,7 +122,7 @@ class _ImportScreenState extends State<ImportScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(AppLocalizations.of(context).translate('title')),
       ),
       body: Center(
         child: Padding(

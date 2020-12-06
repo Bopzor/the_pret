@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:the_pret_flutter/AppLocalizations.dart';
+import 'package:the_pret_flutter/app_localization.dart';
 import 'package:the_pret_flutter/Timer.dart';
 
 class TeaScreen extends StatelessWidget {
-  TeaScreen({Key key, this.tea, this.archiveTea, this.removeTea}) : super(key: key);
+  TeaScreen({
+    Key key,
+    @required this.tea,
+    @required this.archiveTea,
+    @required this.removeTea,
+    @required this.updateTea,
+  }) : super(key: key);
 
-  final tea;
-  final archiveTea;
-  final removeTea;
+  final dynamic tea;
+  final Function archiveTea;
+  final Function removeTea;
+  final Function updateTea;
 
   EdgeInsets setPadding(context) {
     Orientation orientation = MediaQuery.of(context).orientation;
@@ -111,6 +118,7 @@ class TeaScreen extends StatelessWidget {
                       TimerWidget(
                         minutes: tea['time']['minutes'],
                         seconds: tea['time']['seconds'],
+                        cbAtEnd: updateTea({...tea, 'count': tea['count'] + 1}),
                       ),
                       RichText(
                         text: TextSpan(children: [

@@ -19,10 +19,16 @@ void runTimer(SendPort sendPort) {
 }
 
 class TimerWidget extends StatefulWidget {
-  TimerWidget({Key key, this.minutes, this.seconds}) : super(key: key);
+  TimerWidget({
+    Key key,
+    this.cbAtEnd,
+    @required this.minutes,
+    @required this.seconds,
+  }) : super(key: key);
 
   final int minutes;
   final int seconds;
+  final Function cbAtEnd;
 
   @override
   _TimerState createState() => _TimerState();
@@ -96,6 +102,7 @@ class _TimerState extends State<TimerWidget> {
         });
 
         runAlarm();
+        widget.cbAtEnd();
         stop();
         return;
       }
