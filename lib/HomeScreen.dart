@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> sortedList() {
     List<dynamic> list = widget.teasList;
 
-    list.sort((a, b) => int.parse(a['count']).compareTo(int.parse(b['count'])));
+    // list.sort((a, b) => int.parse(a['count']).compareTo(int.parse(b['count'])));
 
     return list;
   }
