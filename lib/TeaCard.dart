@@ -86,7 +86,7 @@ class TeaCard extends StatelessWidget {
                 ),
               ),
 
-              if (tea['archive'] == true)
+              if (tea['archived'] == true)
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -95,7 +95,6 @@ class TeaCard extends StatelessWidget {
                     child: Icon(Icons.archive),
                   ),
                 ),
-
             ],
           ),
         ),

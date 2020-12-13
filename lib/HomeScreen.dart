@@ -25,7 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String query = '';
   TextEditingController search = TextEditingController();
 
-   void dispose() {
+  @override
+  void dispose() {
     search.dispose();
     super.dispose();
   }
@@ -55,7 +56,12 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> sortedList() {
     List<dynamic> list = widget.teasList;
 
-    // list.sort((a, b) => int.parse(a['count']).compareTo(int.parse(b['count'])));
+    list.sort((a, b)  {
+      int aCount = a['count'] is String ? int.parse(a['count']) : a['count'];
+      int bCount = b['count'] is String ? int.parse(b['count']) : b['count'];
+
+      return bCount.compareTo(aCount);
+    });
 
     return list;
   }

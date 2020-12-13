@@ -1,18 +1,21 @@
 {
   "title": "Thé Prêt ?",
   "search": "Search",
-  "displayArchived": "Display archived teas in list",
+  "displayArchived": "Display finished teas in list",
   "importFromFile": "Import tea list from file",
   "addTea": "Add tea",
   "browseFile": "Open file picker",
   "invalidFile": "Invalid file",
   "import": "Import",
   "edit": "Edit",
-  "archive": "Archive",
+  "archive": "Finished",
+  "unarchive": "Got back",
   "delete": "Delete",
   "name": "Name",
   "brand": "Brand",
   "temp": "Temp",
   "time": "Time",
-  "save": "Save"
+  "save": "Save",
+  "timesupTitle": "Thé Prêt ?",
+  "timesupBody": "Tea is ready!"
 }

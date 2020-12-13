@@ -5,7 +5,7 @@ import 'package:the_pret_flutter/adaptive_font_size.dart';
 import 'package:the_pret_flutter/app_localization.dart';
 import 'package:the_pret_flutter/Timer.dart';
 
-class TeaScreen extends StatelessWidget {
+class TeaScreen extends StatefulWidget {
   TeaScreen({
     Key key,
     @required this.tea,
@@ -20,6 +20,22 @@ class TeaScreen extends StatelessWidget {
   final Function removeTea;
   final Function updateTea;
   final FlutterLocalNotificationsPlugin notifications;
+
+  @override
+  TeaScreenState createState() => TeaScreenState();
+}
+
+class TeaScreenState extends State<TeaScreen> {
+  Map<String, dynamic> tea;
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      tea = widget.tea;
+    });
+  }
 
   EdgeInsets setPadding(context) {
     Orientation orientation = MediaQuery.of(context).orientation;
@@ -42,7 +58,7 @@ class TeaScreen extends StatelessWidget {
           child: Icon(Icons.edit, color: Colors.white),
           backgroundColor: Colors.amber,
           onTap: () {
-            Navigator.pushNamed(context, '/edit/' + tea['id']);
+            Navigator.pushNamed(context, '/edit/' + widget.tea['id']);
           },
           label: AppLocalizations.of(context).translate('edit'),
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
@@ -52,10 +68,10 @@ class TeaScreen extends StatelessWidget {
           child: Icon(Icons.archive, color: Colors.white),
           backgroundColor: Colors.deepOrange,
           onTap: () {
-            archiveTea(tea);
+            widget.archiveTea(widget.tea);
             Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
           },
-          label: AppLocalizations.of(context).translate('archive'),
+          label: AppLocalizations.of(context).translate(widget.tea['archived'] ? 'unarchive' : 'archive'),
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
           labelBackgroundColor: Colors.deepOrangeAccent,
         ),
@@ -63,7 +79,7 @@ class TeaScreen extends StatelessWidget {
           child: Icon(Icons.delete, color: Colors.white),
           backgroundColor: Colors.red,
           onTap: () {
-            removeTea(tea);
+            widget.removeTea(widget.tea);
             Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
           },
           label: AppLocalizations.of(context).translate('delete'),
@@ -77,7 +93,7 @@ class TeaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(tea['name'])),
+      appBar: AppBar(title: Text(widget.tea['name'])),
       body: Center(
         child: Padding(
           padding: setPadding(context),
@@ -100,7 +116,7 @@ class TeaScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                tea['name'],
+                                widget.tea['name'],
                                 style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
@@ -111,7 +127,7 @@ class TeaScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  tea['brand'],
+                                  widget.tea['brand'],
                                   style: TextStyle(fontSize: 30, fontStyle: FontStyle.italic, color: Colors.grey)
                                 )
                               ],
@@ -120,17 +136,24 @@ class TeaScreen extends StatelessWidget {
                         ],
                       ),
                       TimerWidget(
-                        cbAtEnd: () => updateTea({...tea, 'count': tea['count'] + 1}),
-                        notifications: notifications,
+                        cbAtEnd: () {
+                          int count = tea['count'] is String ? int.parse(tea['count']) : tea['count'];
+                          Map<String, dynamic> updatedTea = {...widget.tea, 'count': count + 1};
+
+                          setState(() {
+                            tea = updatedTea;
+                          });
+
+                          widget.updateTea(updatedTea);
+                        },
+                        notifications: widget.notifications,
                         minutes: tea['time']['minutes'],
                         seconds: tea['time']['seconds'],
-                        // minutes: 0,
-                        // seconds: 15,
                       ),
                       RichText(
                         text: TextSpan(children: [
                           TextSpan(
-                            text: tea['temperature'],
+                            text: widget.tea['temperature'],
                             style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), color: Colors.black)
                           ),
                           WidgetSpan(
