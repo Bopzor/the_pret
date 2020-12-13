@@ -138,6 +138,10 @@ class _ImportScreenState extends State<ImportScreen> {
                     ElevatedButton(
                       onPressed: () => _openFileExplorer(),
                       child: Text(AppLocalizations.of(context).translate('browseFile')),
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        onPrimary: Colors.white,
+                      ),
                     ),
                     Builder(
                       builder: (BuildContext context) => _loadingPath
@@ -154,7 +158,7 @@ class _ImportScreenState extends State<ImportScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Icon(_error == null ? Icons.check : Icons.close, color: _error == null ? Theme.of(context).accentColor : Colors.red),
+                                      Icon(_error == null ? Icons.check : Icons.close, color: _error == null ? Theme.of(context).primaryColor : Colors.red),
                                       () {
                                         final String name = _fileName.split('/')[_fileName.split('/').length -1];
 
@@ -167,7 +171,10 @@ class _ImportScreenState extends State<ImportScreen> {
                             : const SizedBox(),
                     ),
                     ElevatedButton(
-                      onPressed: _teasList == null ? null : () => widget.mergeTeas(_teasList),
+                      onPressed: _teasList == null ? null : () {
+                        widget.mergeTeas(_teasList);
+                        Navigator.of(context).pushNamed('/');
+                      },
                       child: Text(AppLocalizations.of(context).translate('import')),
                     ),
                     Text(

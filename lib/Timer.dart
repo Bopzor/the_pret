@@ -336,7 +336,7 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
                 CircularProgressIndicator(
                   value: percentage,
                   backgroundColor: Theme.of(context).backgroundColor,
-                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                  valueColor: new AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
                   strokeWidth: 15,
                 ),
               ),

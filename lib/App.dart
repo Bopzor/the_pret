@@ -177,8 +177,10 @@ class _AppState extends State<App> {
         return MaterialPageRoute(builder: (context) => UnknownScreen());
       },
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        fontFamily: 'Lato'
+        primaryColor: Colors.green,
+        accentColor: Colors.teal,
+        backgroundColor: Colors.green,
+        fontFamily: 'Lato',
       ),
       home: HomeScreen(
         saveTea: this.saveTea,

@@ -49,6 +49,7 @@ class TeaScreenState extends State<TeaScreen> {
 
   SpeedDial buildSpeedDial(context) {
     return SpeedDial(
+      backgroundColor: Theme.of(context).primaryColor,
       animatedIcon: AnimatedIcons.menu_close,
       animatedIconTheme: IconThemeData(size: 22.0),
       visible: true,

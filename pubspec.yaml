@@ -1,5 +1,5 @@
 name: the_pret_flutter
-description: A new Flutter project.
+description: Get your tea just ready.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -35,6 +35,7 @@ dependencies:
   rxdart: ^0.25.0
   flutter_local_notifications: ^3.0.2
   flutter_native_timezone: ^1.0.4
+  url_launcher: ^5.7.10
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

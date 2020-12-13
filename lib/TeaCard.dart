@@ -9,7 +9,7 @@ class TeaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        splashColor: Colors.green.withAlpha(30),
+        splashColor: Theme.of(context).primaryColor.withAlpha(30),
         onTap: () {
           Navigator.pushNamed(context, '/tea/' + tea['id']);
         },

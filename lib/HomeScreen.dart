@@ -1,3 +1,4 @@
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:the_pret_flutter/app_localization.dart';
 import 'package:the_pret_flutter/TeaCard.dart';
@@ -122,8 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
             DrawerHeader(
               child:
@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
               ),
-              decoration: BoxDecoration(color: Theme.of(context).accentColor),
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
             SwitchListTile(
               title: Text(AppLocalizations.of(context).translate('displayArchived')),
@@ -147,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (bool value) {
                 widget.updateDisplayArchived(value);
               },
+              activeColor: Theme.of(context).primaryColor,
               secondary: Icon(Icons.archive),
             ),
             ListTile(
@@ -155,6 +156,24 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () {
                 Navigator.of(context).pushNamed('/import');
               },
+            ),
+            Expanded(child: Container()),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Made with ', style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic,)),
+                  Icon(Icons.favorite, color: Colors.pink, size: 12),
+                  Text(' by ', style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                  GestureDetector(
+                    child: Text('bopzor', style: TextStyle(fontSize: 10, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, color: Colors.blue)),
+                    onTap: () => launch('https://github.com/bopzor'),
+                  ),
+                  Text(" for M'man", style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic),),
+                  Text(" 🐸", style: TextStyle(fontSize: 10),),
+                ],
+              ),
             ),
           ],
         ),
@@ -201,6 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         tooltip: AppLocalizations.of(context).translate('addTea'),
         child: Icon(Icons.add),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
     );
   }
