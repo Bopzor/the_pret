@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:the_pret_flutter/adaptive_font_size.dart';
 import 'package:the_pret_flutter/app_localization.dart';
@@ -11,12 +12,14 @@ class TeaScreen extends StatelessWidget {
     @required this.archiveTea,
     @required this.removeTea,
     @required this.updateTea,
+    @required this.notifications,
   }) : super(key: key);
 
   final dynamic tea;
   final Function archiveTea;
   final Function removeTea;
   final Function updateTea;
+  final FlutterLocalNotificationsPlugin notifications;
 
   EdgeInsets setPadding(context) {
     Orientation orientation = MediaQuery.of(context).orientation;
@@ -118,8 +121,11 @@ class TeaScreen extends StatelessWidget {
                       ),
                       TimerWidget(
                         cbAtEnd: () => updateTea({...tea, 'count': tea['count'] + 1}),
+                        notifications: notifications,
                         minutes: tea['time']['minutes'],
                         seconds: tea['time']['seconds'],
+                        // minutes: 0,
+                        // seconds: 15,
                       ),
                       RichText(
                         text: TextSpan(children: [

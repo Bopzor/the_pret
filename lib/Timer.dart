@@ -1,29 +1,29 @@
 import 'dart:async';
 import 'dart:isolate';
-import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_pret_flutter/adaptive_font_size.dart';
+import 'package:the_pret_flutter/main.dart';
+
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 Isolate isolate;
 Capability resumeCapability = new Capability();
 
-SharedPreferences prefs;
+/// Streams are created so that app can respond to notification-related events
+/// since the plugin is initialised in the `main` function
+final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject = BehaviorSubject<ReceivedNotification>();
 
-void runTimer(SendPort sendPort) {
-  int counter = 0;
-  Timer.periodic(new Duration(seconds: 1), (Timer t) {
-    counter++;
-    int msg = counter;
-    sendPort.send(msg);
-  });
-}
+SharedPreferences prefs;
 
 class TimerWidget extends StatefulWidget {
   TimerWidget({
@@ -31,19 +31,19 @@ class TimerWidget extends StatefulWidget {
     this.cbAtEnd,
     @required this.minutes,
     @required this.seconds,
+    @required this.notifications,
   }) : super(key: key);
 
   final int minutes;
   final int seconds;
   final Function cbAtEnd;
+  final FlutterLocalNotificationsPlugin notifications;
 
   @override
   _TimerState createState() => _TimerState();
 }
 
 class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
-  AppLifecycleState _lastLifecycleState;
-
   int minutes = 0;
   int seconds = 0;
   int time = 0;
@@ -57,7 +57,6 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
   AudioCache player = AudioCache();
   AudioPlayer audioPlayer;
 
-  final ReceivePort port = ReceivePort();
   final String isolateName = 'isolate';
 
 
@@ -65,21 +64,11 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    IsolateNameServer.registerPortWithName(
-      port.sendPort,
-      isolateName,
-    );
-
     setState(() {
       minutes = widget.minutes;
       seconds = widget.seconds;
       time = widget.minutes * 60 + widget.seconds;
     });
-
-    AndroidAlarmManager.initialize();
-    // Register for events from the background isolate. These messages will
-    // always coincide with an alarm firing.
-    port.listen((_) async => await stop());
   }
 
   @override
@@ -87,45 +76,111 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
     super.dispose();
 
     WidgetsBinding.instance.removeObserver(this);
-    port.close();
     stop();
 
     print('DISPOSE');
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    switch (state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+      super.didChangeAppLifecycleState(state);
+      switch (state) {
+
       case AppLifecycleState.inactive:
         print('appLifeCycleState inactive');
         break;
+
       case AppLifecycleState.resumed:
         print('appLifeCycleState resumed');
+
+        final prefs = await SharedPreferences.getInstance();
+        prefs.reload();
+        int alarmTime = prefs.getInt('alarm-time');
+        int duration = DateTime.fromMillisecondsSinceEpoch(alarmTime, isUtc: true).difference(DateTime.now()).inSeconds;
+
+        print("REMAINING TIME: $duration");
+        if (!started) {
+          return;
+        }
+
+        if (duration > 0) {
+          setState(() {
+            time = duration;
+          });
+        } else {
+          _cancelNotification();
+
+          setState(() {
+            started = false;
+          });
+
+          stop();
+
+          if (!alarm) {
+            runAlarm();
+          }
+        }
         break;
+
       case AppLifecycleState.paused:
         print('appLifeCycleState paused');
         break;
       case AppLifecycleState.detached:
         print('appLifeCycleState detached');
         break;
-    }
-
-    setState(() {
-      _lastLifecycleState = state;
-    });
+      }
   }
 
-  void handleTimer() {
+  Future<void> _cancelNotification() async {
+    await flutterLocalNotificationsPlugin.cancel(0);
+  }
+
+  Future<void> fullScreenNotification() async {
+    const int insistentFlag = 4;
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.reload();
+    int alarmTime = prefs.getInt('alarm-time');
+    print("ALARM TIME: ${DateTime.fromMillisecondsSinceEpoch(alarmTime).second}");
+    int duration = DateTime.fromMillisecondsSinceEpoch(alarmTime, isUtc: true).difference(DateTime.now()).inSeconds;
+
+    print("REMAINING TIME: $duration");
+
+    await widget.notifications.zonedSchedule(
+      0,
+      'scheduled title',
+      'scheduled body',
+      tz.TZDateTime.now(tz.local).add(Duration(seconds: duration)),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'full screen channel id',
+          'full screen channel name',
+          'full screen channel description',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker',
+          additionalFlags: Int32List.fromList(<int>[insistentFlag]),
+          fullScreenIntent: true,
+          playSound: false,
+        ),
+      ),
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime
+    );
+  }
+
+  void handleTimer() async {
     if (started == false) {
       setState(() {
         started = true;
       });
 
+
       if (time < widget.minutes * 60 + widget.seconds) {
         resume();
       } else {
-        start();
+        await start();
+        fullScreenNotification();
       }
     } else {
       setState(() {
@@ -143,42 +198,25 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
     playLocal();
   }
 
-  void sendMessage(SendPort sendPort, Object msg) {
-    sendPort.send(msg);
-  }
-
-// The background
-  static SendPort uiSendPort;
-
-  // The callback for our alarm
-  static Future<void> callback() async {
-    print('Alarm fired!');
-    // This will be null if we're running in the background.
-    uiSendPort ??= IsolateNameServer.lookupPortByName('isolate');
-    uiSendPort?.send(null);
+  static void runTimer(SendPort sendPort) {
+    int counter = 0;
+    Timer.periodic(new Duration(seconds: 1), (Timer t) {
+      counter++;
+      int msg = counter;
+      sendPort.send(msg);
+    });
   }
 
   Future<void> start() async {
-    int id = Random().nextInt(pow(2, 31));
-
-    setState(() {
-      timerId = id;
-    });
-
-    await AndroidAlarmManager.oneShot(
-      // Duration(minutes: minutes, seconds: seconds),
-      Duration(seconds: 5),
-      id,
-      callback,
-      exact: true,
-      wakeup: true,
-    );
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('alarm-time', DateTime.now().add(Duration(minutes:  minutes, seconds: seconds)).millisecondsSinceEpoch);
+    await prefs.setInt('current-time', time);
 
     ReceivePort receivePort = ReceivePort(); //port for this main isolate to receive messages.
     isolate = await Isolate.spawn(runTimer, receivePort.sendPort);
     resumeCapability = isolate.pauseCapability;
 
-    receivePort.listen((data) {
+    receivePort.listen((data) async {
       int startTime = widget.minutes * 60 + widget.seconds;
 
       if (time <= 0) {
@@ -187,7 +225,6 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
         });
 
         runAlarm();
-        widget?.cbAtEnd();
         stop();
         return;
       }
@@ -196,22 +233,14 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
         time--;
         percentage = 1 - (time / startTime);
       });
+
+      await prefs.setInt('current-time', time);
     });
   }
 
-  Future<void> stop() async {
-    if (timerId != null) {
-      bool cancel = await AndroidAlarmManager.cancel(timerId);
-      if (cancel) {
-        print('Alarm cancel');
-      }
-
-      if (mounted) {
-        setState(() {
-          timerId = null;
-        });
-      }
-    }
+  void stop() {
+    print('stop');
+    _cancelNotification();
 
     if (isolate != null) {
       print('killing isolate');
@@ -222,14 +251,21 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
 
   void pause() {
     print('pause');
+    _cancelNotification();
+
     if (isolate != null) {
       print('pause isolate');
       isolate.pause(resumeCapability);
     }
   }
 
-  void resume() {
+  void resume() async {
     print('resume');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('alarm-time', DateTime.now().add(Duration(seconds: time)).millisecondsSinceEpoch);
+
+    fullScreenNotification();
+
     if (isolate != null) {
       print('resume isolate');
       isolate.resume(resumeCapability);

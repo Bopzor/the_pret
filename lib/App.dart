@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:the_pret_flutter/AppLanguage.dart';
 import 'package:the_pret_flutter/HomeScreen.dart';
@@ -12,14 +13,17 @@ import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
 
 class App extends StatefulWidget {
   final AppLanguage appLanguage;
+  final NotificationAppLaunchDetails notificationAppLaunchDetails;
 
-  App({this.appLanguage});
+  App({this.appLanguage, this.notificationAppLaunchDetails});
 
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   final LocalKeyValuePersistence persistence = LocalKeyValuePersistence();
   final FileStorage storage = FileStorage();
   List<dynamic> teasList = [];
@@ -38,6 +42,23 @@ class _AppState extends State<App> {
       setState(() => displayArchived = value == 'true' ? true : false);
     });
 
+    var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
+  }
+
+  Future onSelectNotification(String payload) async {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return new AlertDialog(
+          title: Text("PayLoad"),
+          content: Text("Payload : $payload"),
+        );
+      },
+    );
   }
 
   void saveTea(Map<String, dynamic> tea) {
@@ -143,6 +164,7 @@ class _AppState extends State<App> {
                 archiveTea: archiveTea,
                 removeTea: removeTea,
                 updateTea: updateTea,
+                notifications: flutterLocalNotificationsPlugin,
               );
             });
           }

@@ -9,7 +9,13 @@ class UnknownScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Thé Prêt?')),
-      body: Center(child: Text('404 page not found')),
+      body: Center(
+        child: Column(
+          children: [
+            Text('404 page not found'),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/');
