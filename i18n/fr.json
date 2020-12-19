@@ -3,6 +3,8 @@
   "search": "Rechercher",
   "displayArchived": "Afficher les thés terminés",
   "importFromFile": "Importer une liste de thés depuis un fichier",
+  "exportList": "Sauvegarder ma liste",
+  "saved": "Sauvegarde réussie",
   "addTea": "Ajouter un thé",
   "browseFile": "Ouvrir l'explorateur de fichier",
   "invalidFile": "Fichier non valide",

@@ -3,6 +3,8 @@
   "search": "Search",
   "displayArchived": "Display finished teas in list",
   "importFromFile": "Import tea list from file",
+  "exportList": "Save list",
+  "saved": "Saved!",
   "addTea": "Add tea",
   "browseFile": "Open file picker",
   "invalidFile": "Invalid file",

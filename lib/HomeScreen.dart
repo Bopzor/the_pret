@@ -1,16 +1,20 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:the_pret_flutter/app_localization.dart';
 import 'package:the_pret_flutter/TeaCard.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({
-    Key key,
-    @required this.saveTea,
-    @required this.teasList,
-    @required this.displayArchived,
-    @required this.updateDisplayArchived
-  }) : super(key: key);
+  HomeScreen(
+      {Key key,
+      @required this.saveTea,
+      @required this.teasList,
+      @required this.displayArchived,
+      @required this.updateDisplayArchived})
+      : super(key: key);
 
   final Function saveTea;
   final List<dynamic> teasList;
@@ -57,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> sortedList() {
     List<dynamic> list = widget.teasList;
 
-    list.sort((a, b)  {
+    list.sort((a, b) {
       int aCount = a['count'] is String ? int.parse(a['count']) : a['count'];
       int bCount = b['count'] is String ? int.parse(b['count']) : b['count'];
 
@@ -65,6 +69,24 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     return list;
+  }
+
+  Future<void> exportTeaList() async {
+    final storageDirectory = await getExternalStorageDirectory();
+    final storageDirectoryPath = storageDirectory.path;
+
+    final file = File('$storageDirectoryPath/the-pret-list${DateTime.now().millisecondsSinceEpoch}.json');
+
+    file
+      .writeAsString(JsonEncoder().convert(widget.teasList))
+      .then((File _file) {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar(context));
+        Navigator.pop(context);
+    });
+  }
+
+  SnackBar snackBar(context) {
+    return SnackBar(content: Text(AppLocalizations.of(context).translate('saved'),), backgroundColor: Colors.teal,);
   }
 
   @override
@@ -126,23 +148,23 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             DrawerHeader(
-              child:
-                Stack(
-                  children: [
-                    Image.asset('logo.png'),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        AppLocalizations.of(context).translate('title'),
-                        style: TextStyle(fontSize:  20, color: Colors.white),
-                      ),
+              child: Stack(
+                children: [
+                  Image.asset('logo.png'),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Text(
+                      AppLocalizations.of(context).translate('title'),
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                  ],
+                  ),
+                ],
               ),
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
             SwitchListTile(
-              title: Text(AppLocalizations.of(context).translate('displayArchived')),
+              title: Text(
+                  AppLocalizations.of(context).translate('displayArchived')),
               value: widget.displayArchived,
               onChanged: (bool value) {
                 widget.updateDisplayArchived(value);
@@ -151,10 +173,18 @@ class _HomeScreenState extends State<HomeScreen> {
               secondary: Icon(Icons.archive),
             ),
             ListTile(
-              title: Text(AppLocalizations.of(context).translate('importFromFile')),
+              title: Text(
+                  AppLocalizations.of(context).translate('importFromFile')),
               leading: Icon(Icons.upload_file),
               onTap: () {
                 Navigator.of(context).pushNamed('/import');
+              },
+            ),
+            ListTile(
+              title: Text(AppLocalizations.of(context).translate('exportList')),
+              leading: Icon(Icons.save),
+              onTap: () {
+                exportTeaList().then;
               },
             ),
             Expanded(child: Container()),
@@ -163,23 +193,45 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Made with ', style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic,)),
+                  Text('Made with ',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      )),
                   Icon(Icons.favorite, color: Colors.pink, size: 12),
-                  Text(' by ', style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                  Text(' by ',
+                      style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic)),
                   GestureDetector(
-                    child: Text('bopzor', style: TextStyle(fontSize: 10, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, color: Colors.blue)),
+                    child: Text('bopzor',
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontStyle: FontStyle.italic,
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue)),
                     onTap: () => launch('https://github.com/bopzor'),
                   ),
-                  Text(" for M'man", style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic),),
-                  Text(" 🐸", style: TextStyle(fontSize: 10),),
+                  Text(
+                    " for M'man",
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic),
+                  ),
+                  Text(
+                    " 🐸",
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
-
-      body:  LayoutBuilder(
+      body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
             child: Center(
@@ -200,8 +252,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           alignment: WrapAlignment.start,
                           children: [
                             ...sortedList()
-                              .where((tea) => isMatchingTea(tea)).toList()
-                              .map((tea) => TeaCard(tea: tea)).toList(),
+                                .where((tea) => isMatchingTea(tea))
+                                .toList()
+                                .map((tea) => TeaCard(tea: tea))
+                                .toList(),
                           ],
                         ),
                       ),
@@ -213,7 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed('/add');
