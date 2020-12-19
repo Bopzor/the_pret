@@ -166,7 +166,7 @@ int minutes = 0;
   }
 
   void handleTimer() async {
-    if (started == false) {
+    if (started == false && time > 0) {
       setState(() {
         started = true;
       });
@@ -220,7 +220,9 @@ int minutes = 0;
           started = false;
         });
 
-        runAlarm();
+        if (!alarm) {
+          runAlarm();
+        }
         stop();
         return;
       }
