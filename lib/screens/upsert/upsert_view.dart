@@ -1,125 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'package:the_pret_flutter/abstract/widget_view.dart';
 import 'package:the_pret_flutter/localization/app_localization.dart';
-import 'package:uuid/uuid.dart';
 
-class UpsertScreen extends StatefulWidget {
-  UpsertScreen({
-    Key key,
-    this.tea,
-    @required this.saveTea,
-  }) : super(key: key);
+import 'package:the_pret_flutter/screens/upsert/upsert.dart';
 
-  final Map<String, dynamic> tea;
-  final Function saveTea;
-
-  @override
-  _UpsertScreenState createState() => _UpsertScreenState();
-}
-
-class _UpsertScreenState extends State<UpsertScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _brandController = TextEditingController();
-  TextEditingController _tempController = TextEditingController();
-  int _minutes = 3;
-  int _seconds = 0;
-  List<int> minutesOptions = [1, 2, 3, 4, 5, 6];
-  List<int> secondsOptions = [0, 15, 30, 45];
-  bool isButtonDisabled = true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.tea != null) {
-      setState(() {
-        _nameController = TextEditingController.fromValue(
-            TextEditingValue(text: widget.tea['name']));
-        _brandController = TextEditingController.fromValue(
-            TextEditingValue(text: widget.tea['brand']));
-        _tempController = TextEditingController.fromValue(
-            TextEditingValue(text: widget.tea['temperature']));
-        _minutes = widget.tea['time']['minutes'];
-        _seconds = widget.tea['time']['seconds'];
-        isButtonDisabled = false;
-      });
-    }
-
-    _nameController.addListener(() => checkEmptyInput());
-    _brandController.addListener(() => checkEmptyInput());
-    _tempController.addListener(() => checkEmptyInput());
-  }
-
-  void dispose() {
-    _nameController.dispose();
-    _brandController.dispose();
-    _tempController.dispose();
-    super.dispose();
-  }
-
-  void checkEmptyInput() {
-    List<String> values = [
-      _nameController.text,
-      _brandController.text,
-      _tempController.text,
-      _minutes.toString(),
-      _seconds.toString()
-    ];
-
-    if (values.any((element) => element.isEmpty)) {
-      setState(() => isButtonDisabled = true);
-    } else {
-      setState(() => isButtonDisabled = false);
-    }
-  }
-
-  int getInitialMinutes() {
-    if (widget.tea != null) {
-      return minutesOptions.indexOf(widget.tea['time']['minutes']);
-    }
-
-    return 2;
-  }
-
-  int getInitialSeconds() {
-    if (widget.tea != null) {
-      return secondsOptions.indexOf(widget.tea['time']['seconds']);
-    }
-
-    return 0;
-  }
-
-  void onSaveTea() {
-    Map<String, dynamic> tea = {
-      'id': Uuid().v4(),
-      'name': _nameController.text,
-      'brand': _brandController.text,
-      'temperature': _tempController.text,
-      'time': {
-        'minutes': _minutes,
-        'seconds': _seconds,
-      },
-      'count': 0,
-      'archived': false,
-    };
-
-    if (widget.tea != null) {
-      tea['id'] = widget.tea['id'];
-      tea['archived'] = widget.tea['archived'];
-    }
-
-    widget.saveTea(tea);
-
-    if (widget.tea != null) {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/tea/' + widget.tea['id'],
-        (Route<dynamic> route) => route.settings.name == '/',
-      );
-    } else {
-      Navigator.pop(context);
-    }
-  }
+class UpsertView extends WidgetView<UpsertScreen, UpsertController> {
+  UpsertView(UpsertController state) : super(state);
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +32,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                     TextFormField(
                       style: TextStyle(fontSize: 30),
                       textCapitalization: TextCapitalization.sentences,
-                      controller: _nameController,
+                      controller: state.nameController,
                       decoration: InputDecoration(
                         labelText:
                             AppLocalizations.of(context).translate('name'),
@@ -152,7 +41,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                     TextFormField(
                       style: TextStyle(fontSize: 30),
                       textCapitalization: TextCapitalization.sentences,
-                      controller: _brandController,
+                      controller: state.brandController,
                       decoration: InputDecoration(
                         labelText:
                             AppLocalizations.of(context).translate('brand'),
@@ -163,7 +52,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
                       child: TextFormField(
                         style: TextStyle(fontSize: 30),
                         textCapitalization: TextCapitalization.sentences,
-                        controller: _tempController,
+                        controller: state.tempController,
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
                           FilteringTextInputFormatter.digitsOnly,
@@ -192,16 +81,12 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                 constraints: BoxConstraints(maxWidth: 100),
                                 child: CupertinoPicker(
                                   scrollController: FixedExtentScrollController(
-                                      initialItem: getInitialMinutes()),
+                                      initialItem: state.getInitialMinutes()),
                                   itemExtent: 50, //height of each item
                                   looping: true,
-                                  onSelectedItemChanged: (int index) {
-                                    setState(() {
-                                      _minutes = minutesOptions[index];
-                                    });
-                                  },
+                                  onSelectedItemChanged: state.onMinutesChange,
                                   children: <Widget>[
-                                    ...minutesOptions.map((options) {
+                                    ...state.minutesOptions.map((options) {
                                       return (Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -220,16 +105,12 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                 constraints: BoxConstraints(maxWidth: 100),
                                 child: CupertinoPicker(
                                   scrollController: FixedExtentScrollController(
-                                      initialItem: getInitialSeconds()),
+                                      initialItem: state.getInitialSeconds()),
                                   itemExtent: 50, //height of each item
                                   looping: true,
-                                  onSelectedItemChanged: (int index) {
-                                    setState(() {
-                                      _seconds = secondsOptions[index];
-                                    });
-                                  },
+                                  onSelectedItemChanged: state.onSecondsChange,
                                   children: <Widget>[
-                                    ...secondsOptions.map((options) {
+                                    ...state.secondsOptions.map((options) {
                                       return (Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -237,10 +118,10 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           Text(
-                                              options
-                                                  .toString()
-                                                  .padLeft(2, '0'),
-                                              style: TextStyle(fontSize: 30))
+                                            options
+                                                .toString()
+                                                .padLeft(2, '0'),
+                                            style: TextStyle(fontSize: 30))
                                         ],
                                       ));
                                     })
@@ -260,8 +141,8 @@ class _UpsertScreenState extends State<UpsertScreen> {
                           Container(
                             height: 50,
                             child:ElevatedButton(
-                              onPressed: isButtonDisabled ? null : () {
-                                onSaveTea();
+                              onPressed: state.isButtonDisabled ? null : () {
+                                state.onSaveTea();
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,

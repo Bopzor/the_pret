@@ -11,7 +11,7 @@ import 'package:the_pret_flutter/screens/home/home.dart';
 import 'package:the_pret_flutter/screens/import/import.dart';
 import 'package:the_pret_flutter/screens/tea/tea.dart';
 import 'package:the_pret_flutter/screens/unknown.dart';
-import 'package:the_pret_flutter/UpsertScreen.dart';
+import 'package:the_pret_flutter/screens/upsert/upsert.dart';
 
 class App extends StatefulWidget {
   final AppLanguage appLanguage;
