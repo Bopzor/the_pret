@@ -7,10 +7,10 @@ import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
 import 'package:the_pret_flutter/localization/AppLanguage.dart';
 
 import 'package:the_pret_flutter/app/app_view.dart';
-import 'package:the_pret_flutter/ImportScreen.dart';
 import 'package:the_pret_flutter/TeaScreen.dart';
 import 'package:the_pret_flutter/screens/home/home.dart';
-import 'package:the_pret_flutter/screens/unknown_screen.dart';
+import 'package:the_pret_flutter/screens/import/import.dart';
+import 'package:the_pret_flutter/screens/unknown.dart';
 import 'package:the_pret_flutter/UpsertScreen.dart';
 
 class App extends StatefulWidget {
