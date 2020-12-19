@@ -5,8 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:the_pret_flutter/localization/app_localization.dart';
 
 import 'package:the_pret_flutter/app/app.dart';
-import 'package:the_pret_flutter/HomeScreen.dart';
 import 'package:the_pret_flutter/abstract/widget_view.dart';
+import 'package:the_pret_flutter/screens/home/home.dart';
 
 class AppView extends WidgetView<App, AppController> {
   AppView(AppController state) : super(state);
