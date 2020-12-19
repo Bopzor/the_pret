@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:the_pret_flutter/app_localization.dart';
+import 'package:the_pret_flutter/localization/app_localization.dart';
 import 'package:uuid/uuid.dart';
 
 class UpsertScreen extends StatefulWidget {
@@ -259,20 +259,15 @@ class _UpsertScreenState extends State<UpsertScreen> {
                         children: [
                           Container(
                             height: 50,
-                            child: ElevatedButton(
+                            child:ElevatedButton(
+                              onPressed: isButtonDisabled ? null : () {
+                                onSaveTea();
+                              },
                               style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).primaryColor,
                                 onPrimary: Colors.white,
                               ),
-                              onPressed: isButtonDisabled
-                                  ? null
-                                  : () {
-                                      onSaveTea();
-                                    },
-                              child: Text(
-                                  AppLocalizations.of(context)
-                                      .translate('save'),
-                                  style: TextStyle(fontSize: 30)),
+                              child: Text(AppLocalizations.of(context).translate('save'), style: TextStyle(fontSize: 30)),
                             ),
                           ),
                         ],

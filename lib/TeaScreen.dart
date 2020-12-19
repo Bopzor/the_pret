@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:the_pret_flutter/adaptive_font_size.dart';
-import 'package:the_pret_flutter/app_localization.dart';
+import 'package:the_pret_flutter/utils/adaptive_font_size.dart';
+import 'package:the_pret_flutter/localization/app_localization.dart';
 import 'package:the_pret_flutter/Timer.dart';
 
 class TeaScreen extends StatefulWidget {

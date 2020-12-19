@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:the_pret_flutter/adaptive_font_size.dart';
-import 'package:the_pret_flutter/app_localization.dart';
+import 'package:the_pret_flutter/utils/adaptive_font_size.dart';
+import 'package:the_pret_flutter/localization/app_localization.dart';
 import 'package:the_pret_flutter/main.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
@@ -129,10 +129,12 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _cancelNotification() async {
+    print('cancel notification');
     await flutterLocalNotificationsPlugin.cancel(0);
   }
 
   Future<void> fullScreenNotification() async {
+    print('start notification');
     const int insistentFlag = 4;
     final prefs = await SharedPreferences.getInstance();
 
@@ -359,7 +361,7 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
                 onPressed: () {
                   if (alarm) {
                     stopMusic();
-                    widget.cbAtEnd();
+                    widget?.cbAtEnd();
                   } else {
                     handleTimer();
                   }

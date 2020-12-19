@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
-import 'package:the_pret_flutter/app_localization.dart';
+import 'package:the_pret_flutter/localization/app_localization.dart';
 
 class ImportScreen extends StatefulWidget {
   ImportScreen({Key key, @required this.mergeTeas});
