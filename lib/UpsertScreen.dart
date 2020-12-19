@@ -34,9 +34,12 @@ class _UpsertScreenState extends State<UpsertScreen> {
 
     if (widget.tea != null) {
       setState(() {
-        _nameController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['name']));
-        _brandController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['brand']));
-        _tempController = TextEditingController.fromValue(TextEditingValue(text: widget.tea['temperature']));
+        _nameController = TextEditingController.fromValue(
+            TextEditingValue(text: widget.tea['name']));
+        _brandController = TextEditingController.fromValue(
+            TextEditingValue(text: widget.tea['brand']));
+        _tempController = TextEditingController.fromValue(
+            TextEditingValue(text: widget.tea['temperature']));
         _minutes = widget.tea['time']['minutes'];
         _seconds = widget.tea['time']['seconds'];
         isButtonDisabled = false;
@@ -111,7 +114,7 @@ class _UpsertScreenState extends State<UpsertScreen> {
     if (widget.tea != null) {
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/tea/' + widget.tea['id'],
-        (Route<dynamic> route) =>  route.settings.name == '/',
+        (Route<dynamic> route) => route.settings.name == '/',
       );
     } else {
       Navigator.pop(context);
@@ -121,18 +124,19 @@ class _UpsertScreenState extends State<UpsertScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).translate('title'))),
+      appBar:
+          AppBar(title: Text(AppLocalizations.of(context).translate('title'))),
       body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints viewportConstraints) {
-          return SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                child: ConstrainedBox(
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        return SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+              child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: viewportConstraints.maxHeight,
                 ),
-                child:  Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -141,7 +145,8 @@ class _UpsertScreenState extends State<UpsertScreen> {
                       textCapitalization: TextCapitalization.sentences,
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).translate('name'),
+                        labelText:
+                            AppLocalizations.of(context).translate('name'),
                       ),
                     ),
                     TextFormField(
@@ -149,7 +154,8 @@ class _UpsertScreenState extends State<UpsertScreen> {
                       textCapitalization: TextCapitalization.sentences,
                       controller: _brandController,
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).translate('brand'),
+                        labelText:
+                            AppLocalizations.of(context).translate('brand'),
                       ),
                     ),
                     Container(
@@ -164,29 +170,29 @@ class _UpsertScreenState extends State<UpsertScreen> {
                           LengthLimitingTextInputFormatter(3)
                         ],
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context).translate('temp'),
+                          labelText:
+                              AppLocalizations.of(context).translate('temp'),
                           suffixText: '°C',
                           isDense: true,
                         ),
                       ),
                     ),
-
                     Padding(
                       padding: EdgeInsets.only(top: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            AppLocalizations.of(context).translate('time'),
-                            style: TextStyle(fontSize: 30, color: Colors.grey[700])
-                          ),
+                          Text(AppLocalizations.of(context).translate('time'),
+                              style: TextStyle(
+                                  fontSize: 30, color: Colors.grey[700])),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
                                 constraints: BoxConstraints(maxWidth: 100),
                                 child: CupertinoPicker(
-                                  scrollController: FixedExtentScrollController(initialItem: getInitialMinutes()),
+                                  scrollController: FixedExtentScrollController(
+                                      initialItem: getInitialMinutes()),
                                   itemExtent: 50, //height of each item
                                   looping: true,
                                   onSelectedItemChanged: (int index) {
@@ -196,20 +202,25 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                   },
                                   children: <Widget>[
                                     ...minutesOptions.map((options) {
-                                      return (
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [Text(options.toString(), style: TextStyle(fontSize: 30))],
-                                        )
-                                      );
-                                  })],
+                                      return (Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(options.toString(),
+                                              style: TextStyle(fontSize: 30))
+                                        ],
+                                      ));
+                                    })
+                                  ],
                                 ),
                               ),
                               Container(
                                 constraints: BoxConstraints(maxWidth: 100),
                                 child: CupertinoPicker(
-                                  scrollController: FixedExtentScrollController(initialItem: getInitialSeconds()),
+                                  scrollController: FixedExtentScrollController(
+                                      initialItem: getInitialSeconds()),
                                   itemExtent: 50, //height of each item
                                   looping: true,
                                   onSelectedItemChanged: (int index) {
@@ -219,14 +230,21 @@ class _UpsertScreenState extends State<UpsertScreen> {
                                   },
                                   children: <Widget>[
                                     ...secondsOptions.map((options) {
-                                      return (
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [Text(options.toString().padLeft(2, '0'), style: TextStyle(fontSize: 30))],
-                                        )
-                                      );
-                                  })],
+                                      return (Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                              options
+                                                  .toString()
+                                                  .padLeft(2, '0'),
+                                              style: TextStyle(fontSize: 30))
+                                        ],
+                                      ));
+                                    })
+                                  ],
                                 ),
                               ),
                             ],
@@ -234,7 +252,6 @@ class _UpsertScreenState extends State<UpsertScreen> {
                         ],
                       ),
                     ),
-
                     Padding(
                       padding: const EdgeInsets.only(top: 30.0),
                       child: Row(
@@ -242,11 +259,20 @@ class _UpsertScreenState extends State<UpsertScreen> {
                         children: [
                           Container(
                             height: 50,
-                            child:ElevatedButton(
-                              onPressed: isButtonDisabled ? null : () {
-                                onSaveTea();
-                              },
-                              child: Text(AppLocalizations.of(context).translate('save'), style: TextStyle(fontSize: 30)),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).primaryColor,
+                                onPrimary: Colors.white,
+                              ),
+                              onPressed: isButtonDisabled
+                                  ? null
+                                  : () {
+                                      onSaveTea();
+                                    },
+                              child: Text(
+                                  AppLocalizations.of(context)
+                                      .translate('save'),
+                                  style: TextStyle(fontSize: 30)),
                             ),
                           ),
                         ],
@@ -255,11 +281,10 @@ class _UpsertScreenState extends State<UpsertScreen> {
                   ],
                 ),
               ),
-              ),
             ),
-          );
-        }
-      ),
+          ),
+        );
+      }),
     );
   }
 }

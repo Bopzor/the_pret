@@ -273,9 +273,9 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
   }
 
   stopMusic() async {
-    player.clear('fini.mp3');
-
     await audioPlayer.stop();
+
+    player.clear('fini.mp3');
 
     setState(() {
       alarm = false;

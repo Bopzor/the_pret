@@ -175,6 +175,10 @@ class _ImportScreenState extends State<ImportScreen> {
                         widget.mergeTeas(_teasList);
                         Navigator.of(context).pushNamed('/');
                       },
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        onPrimary: Colors.white,
+                      ),
                       child: Text(AppLocalizations.of(context).translate('import')),
                     ),
                     Text(
