@@ -7,9 +7,9 @@ import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
 import 'package:the_pret_flutter/localization/AppLanguage.dart';
 
 import 'package:the_pret_flutter/app/app_view.dart';
-import 'package:the_pret_flutter/TeaScreen.dart';
 import 'package:the_pret_flutter/screens/home/home.dart';
 import 'package:the_pret_flutter/screens/import/import.dart';
+import 'package:the_pret_flutter/screens/tea/tea.dart';
 import 'package:the_pret_flutter/screens/unknown.dart';
 import 'package:the_pret_flutter/UpsertScreen.dart';
 
@@ -29,11 +29,9 @@ class AppController extends State<App> {
 
   List<dynamic> teasList = [];
   bool displayArchived = false;
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  FlutterLocalNotificationsPlugin notifications;
 
   void initState() {
-    super.initState();
-
     storage.readFile().then((response) {
       setState(() {
         teasList = response ?? [];
@@ -50,6 +48,12 @@ class AppController extends State<App> {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
+
+    setState(() {
+      notifications = flutterLocalNotificationsPlugin;
+    });
+
+    super.initState();
   }
 
   Future onSelectNotification(String payload) async {
@@ -154,7 +158,7 @@ class AppController extends State<App> {
             archiveTea: archiveTea,
             removeTea: removeTea,
             updateTea: updateTea,
-            notifications: flutterLocalNotificationsPlugin,
+            notifications: notifications,
           );
         });
       }

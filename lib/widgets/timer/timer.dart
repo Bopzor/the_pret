@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:typed_data';
-import 'dart:ui';
 
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:the_pret_flutter/utils/adaptive_font_size.dart';
-import 'package:the_pret_flutter/localization/app_localization.dart';
-import 'package:the_pret_flutter/main.dart';
 
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/adaptive_font_size.dart';
+
+import 'package:the_pret_flutter/main.dart';
+import 'package:the_pret_flutter/widgets/timer/timer_view.dart';
 
 Isolate isolate;
 Capability resumeCapability = new Capability();
@@ -24,8 +24,8 @@ final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
 
 SharedPreferences prefs;
 
-class TimerWidget extends StatefulWidget {
-  TimerWidget({
+class TeaTimer extends StatefulWidget {
+  TeaTimer({
     Key key,
     this.cbAtEnd,
     @required this.minutes,
@@ -39,11 +39,11 @@ class TimerWidget extends StatefulWidget {
   final FlutterLocalNotificationsPlugin notifications;
 
   @override
-  _TimerState createState() => _TimerState();
+  TimerController createState() => TimerController();
 }
 
-class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
-  int minutes = 0;
+class TimerController extends State<TeaTimer> with WidgetsBindingObserver {
+int minutes = 0;
   int seconds = 0;
   int time = 0;
   int timerId;
@@ -80,52 +80,52 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-      super.didChangeAppLifecycleState(state);
-      switch (state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
 
-      case AppLifecycleState.inactive:
-        break;
+    case AppLifecycleState.inactive:
+      break;
 
-      case AppLifecycleState.resumed:
-        final prefs = await SharedPreferences.getInstance();
-        prefs.reload();
-        int alarmTime = prefs.getInt('alarm-time');
-        int duration = DateTime.fromMillisecondsSinceEpoch(alarmTime, isUtc: true).difference(DateTime.now()).inSeconds;
+    case AppLifecycleState.resumed:
+      final prefs = await SharedPreferences.getInstance();
+      prefs.reload();
+      int alarmTime = prefs.getInt('alarm-time');
+      int duration = DateTime.fromMillisecondsSinceEpoch(alarmTime, isUtc: true).difference(DateTime.now()).inSeconds;
 
-        if (!started) {
-          return;
-        }
-
-        if (duration > 0) {
-          int startTime = widget.minutes * 60 + widget.seconds;
-
-          setState(() {
-            time = duration;
-            percentage = 1 - (time / startTime);
-          });
-        } else {
-          _cancelNotification();
-
-          setState(() {
-            started = false;
-            time = 0;
-            percentage = 1;
-          });
-
-          stop();
-
-          if (!alarm) {
-            runAlarm();
-          }
-        }
-        break;
-
-      case AppLifecycleState.paused:
-        break;
-
-      case AppLifecycleState.detached:
-        break;
+      if (!started) {
+        return;
       }
+
+      if (duration > 0) {
+        int startTime = widget.minutes * 60 + widget.seconds;
+
+        setState(() {
+          time = duration;
+          percentage = 1 - (time / startTime);
+        });
+      } else {
+        _cancelNotification();
+
+        setState(() {
+          started = false;
+          time = 0;
+          percentage = 1;
+        });
+
+        stop();
+
+        if (!alarm) {
+          runAlarm();
+        }
+      }
+      break;
+
+    case AppLifecycleState.paused:
+      break;
+
+    case AppLifecycleState.detached:
+      break;
+    }
   }
 
   Future<void> _cancelNotification() async {
@@ -315,62 +315,15 @@ class _TimerState extends State<TimerWidget> with WidgetsBindingObserver {
     return texts;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      height: MediaQuery.of(context).size.width * 0.7,
-      constraints: BoxConstraints(
-        minHeight: 100,
-        minWidth: 100,
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.width * 0.7,
-              constraints: BoxConstraints(
-                minHeight: 100,
-                minWidth: 100,
-              ),
-              child:
-                CircularProgressIndicator(
-                  value: percentage,
-                  backgroundColor: Theme.of(context).backgroundColor,
-                  valueColor: new AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
-                  strokeWidth: 15,
-                ),
-              ),
-          ) ,
-
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [...displayTime(context)],
-            ),
-          ),
-
-          Align(
-            alignment: FractionalOffset.bottomCenter,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 20.0),
-              child: IconButton(
-                icon: displayIcon(),
-                iconSize: AdaptiveFontSize().getadaptiveTextSize(context, 60.0),
-                onPressed: () {
-                  if (alarm) {
-                    stopMusic();
-                    widget?.cbAtEnd();
-                  } else {
-                    handleTimer();
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  void toggleTimer() {
+    if (alarm) {
+      stopMusic();
+      widget?.cbAtEnd();
+    } else {
+      handleTimer();
+    }
   }
+
+  @override
+  Widget build(BuildContext context) => TimerView(this);
 }
