@@ -59,7 +59,9 @@ class ImportScreenController extends State<ImportScreen> {
       List<dynamic> teas = JsonDecoder().convert(content);
       List<String> missing = [];
 
-      Iterable<Map<String, dynamic>> teasList = teas.map((element) {
+      print('readFile');
+
+      Iterable<Map<String, dynamic>> list = teas.map((element) {
         for (String key in ['id', 'name', 'brand', 'temperature', 'time']) {
           if (!element.keys.contains(key)) {
             missing.add(key);
@@ -98,10 +100,9 @@ class ImportScreenController extends State<ImportScreen> {
         return tea;
       });
 
-
       if (missing.length <= 0) {
         setState(() {
-          teasList = teasList;
+          teasList = list;
           error = null;
         });
       } else {
