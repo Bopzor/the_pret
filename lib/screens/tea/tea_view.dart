@@ -88,7 +88,7 @@ class TeaScreenView extends WidgetView<TeaScreen, TeaScreenController> {
           )
         ),
       ),
-      floatingActionButton: TeadSpeedDial(tea: state.tea, archiveTea: widget.archiveTea, removeTea: widget.removeTea,),
+      floatingActionButton: TeadSpeedDial(tea: state.tea, archiveTea: widget.archiveTea, removeTea: state.showDeleteConfirmation,),
     );
   }
 }
@@ -140,7 +140,6 @@ class TeadSpeedDial extends StatelessWidget {
           backgroundColor: Colors.red,
           onTap: () {
             removeTea(tea);
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
           },
           label: AppLocalizations.of(context).translate('delete'),
           labelStyle: TextStyle(fontWeight: FontWeight.w500),

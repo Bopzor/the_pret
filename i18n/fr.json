@@ -13,11 +13,13 @@
   "archive": "J'en ai plus",
   "unarchive": "J'en ai",
   "delete": "Supprimer",
+  "cancel": "Annuler",
   "name": "Nom",
   "brand": "Marque",
   "temp": "Temp",
   "time": "Durée",
   "save": "Enregistrer",
   "timesupTitle": "Thé Prêt ?",
-  "timesupBody": "Le thé est prêt !"
+  "timesupBody": "Le thé est prêt !",
+  "?": " ?"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:the_pret_flutter/localization/app_localization.dart';
 import 'package:the_pret_flutter/screens/tea/tea_view.dart';
 
 class TeaScreen extends StatefulWidget {
@@ -53,6 +54,37 @@ class TeaScreenController extends State<TeaScreen> {
     });
 
     widget.updateTea(updatedTea);
+  }
+
+  showDeleteConfirmation(tea) {
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text(
+          '${AppLocalizations.of(context).translate('delete')} ${tea['name']}${AppLocalizations.of(context).translate('?')}',
+        ),
+        actions: <Widget>[
+          FlatButton(
+            textColor: Colors.grey,
+            child: Text(AppLocalizations.of(context).translate('cancel')),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          ElevatedButton(
+            child: Text(AppLocalizations.of(context).translate('delete')),
+            style: ElevatedButton.styleFrom(
+              primary: Colors.redAccent,
+              onPrimary: Colors.white,
+            ),
+            onPressed: () {
+              widget.removeTea(tea);
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) =>  false);
+            },
+          ),
+        ],
+      )
+    );
   }
 
   @override

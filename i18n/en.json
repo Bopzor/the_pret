@@ -13,11 +13,13 @@
   "archive": "Finished",
   "unarchive": "Got back",
   "delete": "Delete",
+  "cancel": "Cancel",
   "name": "Name",
   "brand": "Brand",
   "temp": "Temp",
   "time": "Time",
   "save": "Save",
   "timesupTitle": "Thé Prêt ?",
-  "timesupBody": "Tea is ready!"
+  "timesupBody": "Tea is ready!",
+  "?": "?"
 }
