@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/screens/tea/tea_view.dart';
 
 class TeaScreen extends StatefulWidget {
@@ -28,9 +28,7 @@ class TeaScreenController extends State<TeaScreen> {
 
   @override
   void initState() {
-    setState(() {
-      tea = widget.tea;
-    });
+    tea = widget.tea;
 
     super.initState();
   }

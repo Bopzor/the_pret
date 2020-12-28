@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends StatelessWidget {

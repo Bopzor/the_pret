@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/screens/home/home_view.dart';
 
 class HomeScreen extends StatefulWidget {

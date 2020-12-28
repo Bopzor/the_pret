@@ -32,17 +32,15 @@ TextEditingController nameController = TextEditingController();
     super.initState();
 
     if (widget.tea != null) {
-      setState(() {
-        nameController = TextEditingController.fromValue(
-            TextEditingValue(text: widget.tea['name']));
-        brandController = TextEditingController.fromValue(
-            TextEditingValue(text: widget.tea['brand']));
-        tempController = TextEditingController.fromValue(
-            TextEditingValue(text: widget.tea['temperature']));
-        minutes = widget.tea['time']['minutes'];
-        seconds = widget.tea['time']['seconds'];
-        isButtonDisabled = false;
-      });
+      nameController = TextEditingController.fromValue(
+          TextEditingValue(text: widget.tea['name']));
+      brandController = TextEditingController.fromValue(
+          TextEditingValue(text: widget.tea['brand']));
+      tempController = TextEditingController.fromValue(
+          TextEditingValue(text: widget.tea['temperature']));
+      minutes = widget.tea['time']['minutes'];
+      seconds = widget.tea['time']['seconds'];
+      isButtonDisabled = false;
     }
 
     nameController.addListener(() => checkEmptyInput());

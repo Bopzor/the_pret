@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
-import 'package:the_pret_flutter/localization/AppLanguage.dart';
+import 'package:the_pret_flutter/utils/localization/AppLanguage.dart';
 
 import 'package:the_pret_flutter/app/app.dart';
 

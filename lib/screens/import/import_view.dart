@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:the_pret_flutter/abstract/widget_view.dart';
-import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/screens/import/import.dart';
 
 class ImportScreenView extends WidgetView<ImportScreen, ImportScreenController> {

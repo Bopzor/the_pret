@@ -11,7 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/utils/adaptive_font_size.dart';
 
 import 'package:the_pret_flutter/main.dart';
@@ -63,11 +63,9 @@ int minutes = 0;
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    setState(() {
-      minutes = widget.minutes;
-      seconds = widget.seconds;
-      time = widget.minutes * 60 + widget.seconds;
-    });
+    minutes = widget.minutes;
+    seconds = widget.seconds;
+    time = widget.minutes * 60 + widget.seconds;
   }
 
   @override

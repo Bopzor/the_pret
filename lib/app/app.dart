@@ -3,8 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:the_pret_flutter/data/FileStorage.dart';
 import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
-
-import 'package:the_pret_flutter/localization/AppLanguage.dart';
+import 'package:the_pret_flutter/utils/localization/AppLanguage.dart';
 
 import 'package:the_pret_flutter/app/app_view.dart';
 import 'package:the_pret_flutter/screens/home/home.dart';

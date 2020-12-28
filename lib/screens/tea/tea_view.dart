@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'package:the_pret_flutter/utils/adaptive_font_size.dart';
-import 'package:the_pret_flutter/localization/app_localization.dart';
+import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/abstract/widget_view.dart';
 
 import 'package:the_pret_flutter/screens/tea/tea.dart';

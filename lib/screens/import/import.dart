@@ -22,11 +22,6 @@ class ImportScreenController extends State<ImportScreen> {
   dynamic teasList;
   String error;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void openFileExplorer() async {
     setState(() => loadingPath = true);
     try {
