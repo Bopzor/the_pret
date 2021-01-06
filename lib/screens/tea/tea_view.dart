@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -6,81 +8,90 @@ import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/abstract/widget_view.dart';
 
 import 'package:the_pret_flutter/screens/tea/tea.dart';
+import 'package:the_pret_flutter/widgets/camera/camera.dart';
 import 'package:the_pret_flutter/widgets/timer/timer.dart';
 
 class TeaScreenView extends WidgetView<TeaScreen, TeaScreenController> {
   TeaScreenView(TeaScreenController state) : super(state);
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.tea['name'])),
-      body: Center(
+      body: state.camera ? Camera(saveImage: state.saveImage) : Center(
         child: Padding(
           padding: state.setPadding(context),
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints viewportConstraints) {
               return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: viewportConstraints.maxHeight,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: state.teaImage != null ? DecorationImage(
+                      image: MemoryImage(base64Decode(state.teaImage)),
+                      fit: BoxFit.fill,
+                    ) : null,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            constraints: BoxConstraints(
-                              minHeight: 120,
-                            ),
-                            child: Center(
-                              child: Text(
-                                widget.tea['name'],
-                                style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: viewportConstraints.maxHeight,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              constraints: BoxConstraints(
+                                minHeight: 120,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  widget.tea['name'],
+                                  style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.tea['brand'],
-                                  style: TextStyle(fontSize: 30, fontStyle: FontStyle.italic, color: Colors.grey)
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      TeaTimer(
-                        cbAtEnd: state.incrementCount,
-                        notifications: widget.notifications,
-                        minutes: state.tea['time']['minutes'],
-                        seconds: state.tea['time']['seconds'],
-                      ),
-                      RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                            text: widget.tea['temperature'],
-                            style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), color: Colors.black)
-                          ),
-                          WidgetSpan(
-                            child: Transform.translate(
-                              offset: const Offset(2, -18),
-                              child: Text(
-                                '°C',
-                                textScaleFactor: 2,
+                            Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.tea['brand'],
+                                    style: TextStyle(fontSize: 30, fontStyle: FontStyle.italic, color: Colors.grey)
+                                  ),
+                                  IconButton(icon: Icon(Icons.camera), onPressed: state.showCamera),
+                                ],
                               ),
                             ),
-                          )
-                        ]),
-                      ),
-                    ],
+                          ],
+                        ),
+                        TeaTimer(
+                          cbAtEnd: state.incrementCount,
+                          notifications: widget.notifications,
+                          minutes: state.tea['time']['minutes'],
+                          seconds: state.tea['time']['seconds'],
+                        ),
+                        RichText(
+                          text: TextSpan(children: [
+                            TextSpan(
+                              text: widget.tea['temperature'],
+                              style: TextStyle(fontSize: AdaptiveFontSize().getadaptiveTextSize(context, 60), color: Colors.black)
+                            ),
+                            WidgetSpan(
+                              child: Transform.translate(
+                                offset: const Offset(2, -18),
+                                child: Text(
+                                  '°C',
+                                  textScaleFactor: 2,
+                                ),
+                              ),
+                            )
+                          ]),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -88,7 +99,7 @@ class TeaScreenView extends WidgetView<TeaScreen, TeaScreenController> {
           )
         ),
       ),
-      floatingActionButton: TeadSpeedDial(tea: state.tea, archiveTea: widget.archiveTea, removeTea: state.showDeleteConfirmation,),
+      floatingActionButton: state.camera ? null : TeadSpeedDial(tea: state.tea, archiveTea: widget.archiveTea, removeTea: state.showDeleteConfirmation,),
     );
   }
 }

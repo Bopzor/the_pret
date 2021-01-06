@@ -16,7 +16,7 @@ class App extends StatefulWidget {
   final AppLanguage appLanguage;
   final NotificationAppLaunchDetails notificationAppLaunchDetails;
 
-  App({this.appLanguage, this.notificationAppLaunchDetails});
+  App({@required this.appLanguage, @required this.notificationAppLaunchDetails});
 
   @override
   AppController createState() => AppController();
