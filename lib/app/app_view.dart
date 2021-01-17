@@ -30,11 +30,13 @@ class AppView extends WidgetView<App, AppController> {
         backgroundColor: Colors.green,
         fontFamily: 'Lato',
       ),
-      home: HomeScreen(
+      home: (state.teasList == null || state.shortcuts == null) ? Container() :
+      HomeScreen(
         saveTea: state.saveTea,
         teasList: state.teasList,
         displayArchived: state.displayArchived,
         updateDisplayArchived: state.updateDisplayArchived,
+        shortcut: state.shortcut,
       ),
     );
   }

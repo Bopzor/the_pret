@@ -6,17 +6,24 @@ import 'package:the_pret_flutter/screens/tea/tea_view.dart';
 class TeaScreen extends StatefulWidget {
   TeaScreen({
     Key key,
+    this.startTimer,
+    @required this.isShortcut,
     @required this.tea,
     @required this.archiveTea,
     @required this.removeTea,
     @required this.updateTea,
     @required this.notifications,
+    @required this.toggleShortcut,
   }) : super(key: key);
 
+  final bool startTimer;
+
+  final bool isShortcut;
   final dynamic tea;
   final Function archiveTea;
   final Function removeTea;
   final Function updateTea;
+  final Function toggleShortcut;
   final FlutterLocalNotificationsPlugin notifications;
 
   @override
@@ -54,7 +61,7 @@ class TeaScreenController extends State<TeaScreen> {
     widget.updateTea(updatedTea);
   }
 
-  showDeleteConfirmation(tea) {
+  void showDeleteConfirmation(tea) {
     showDialog(
       context: context,
       builder: (_) => new AlertDialog(

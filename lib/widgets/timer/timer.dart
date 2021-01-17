@@ -28,10 +28,13 @@ class TeaTimer extends StatefulWidget {
   TeaTimer({
     Key key,
     this.cbAtEnd,
+    this.startTimer,
     @required this.minutes,
     @required this.seconds,
     @required this.notifications,
   }) : super(key: key);
+
+  final bool startTimer;
 
   final int minutes;
   final int seconds;
@@ -66,6 +69,10 @@ int minutes = 0;
     minutes = widget.minutes;
     seconds = widget.seconds;
     time = widget.minutes * 60 + widget.seconds;
+
+    if (widget.startTimer) {
+      toggleTimer();
+    }
   }
 
   @override

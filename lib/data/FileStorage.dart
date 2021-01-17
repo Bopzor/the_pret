@@ -12,14 +12,10 @@ class FileStorage {
     return directory.path;
   }
 
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/tea-list.thepret.json');
-  }
-
-  Future<List<dynamic>> readFile() async {
+  Future<List<dynamic>> readFile(String fileName) async {
     try {
-      final file = await _localFile;
+      final path = await _localPath;
+      final file = File('$path/$fileName');
 
       // Read the file
       String contents = await file.readAsString();
@@ -31,10 +27,19 @@ class FileStorage {
     }
   }
 
-  Future<File> writeFile(List<dynamic> teasList) async {
-    final file = await _localFile;
+  Future<File> writeTeasListAsFile(List<dynamic> teasList) async {
+    final path = await _localPath;
+    final file = File('$path/tea-list.thepret.json');
 
     // Write the file
     return file.writeAsString(JsonEncoder().convert(teasList));
+  }
+
+  Future<File> writeShortcutAsFile(List<dynamic> shortcuts) async {
+    final path = await _localPath;
+    final file = File('$path/shortcuts.thepret.json');
+
+    // Write the file
+    return file.writeAsString(JsonEncoder().convert(shortcuts));
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,19 +7,31 @@ import 'package:path_provider/path_provider.dart';
 import 'package:the_pret_flutter/utils/localization/app_localization.dart';
 import 'package:the_pret_flutter/screens/home/home_view.dart';
 
+class TeaRouteArgument {
+  final bool startTimer;
+
+  TeaRouteArgument(this.startTimer);
+}
+
+
 class HomeScreen extends StatefulWidget {
   HomeScreen(
-    {Key key,
-    @required this.saveTea,
-    @required this.teasList,
-    @required this.displayArchived,
-    @required this.updateDisplayArchived})
+    {
+      Key key,
+      this.shortcut,
+      @required this.saveTea,
+      @required this.teasList,
+      @required this.displayArchived,
+      @required this.updateDisplayArchived,
+    })
     : super(key: key);
 
   final Function saveTea;
   final List<dynamic> teasList;
   final bool displayArchived;
   final Function updateDisplayArchived;
+
+  final String shortcut;
 
   @override
   HomeScreenController createState() => HomeScreenController();
@@ -28,6 +41,18 @@ class HomeScreenController extends State<HomeScreen> {
   bool showSearchbar = false;
   String query = '';
   TextEditingController search = TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.shortcut != null) {
+
+      Timer.run(() {
+        Navigator.of(context).pushNamed('/tea/${widget.shortcut}', arguments: TeaRouteArgument(true));
+      });
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:quick_actions/quick_actions.dart';
 
 import 'package:the_pret_flutter/data/FileStorage.dart';
 import 'package:the_pret_flutter/data/LocalKeyValuePersistence.dart';
@@ -25,13 +26,37 @@ class App extends StatefulWidget {
 class AppController extends State<App> {
   final LocalKeyValuePersistence persistence = LocalKeyValuePersistence();
   final FileStorage storage = FileStorage();
+  final QuickActions quickActions = QuickActions();
 
-  List<dynamic> teasList = [];
+  List<dynamic> shortcuts;
+  List<ShortcutItem> shortcutItems;
+  String shortcut;
+
+  List<dynamic> teasList;
   bool displayArchived = false;
   FlutterLocalNotificationsPlugin notifications;
 
   void initState() {
-    storage.readFile().then((response) {
+    storage.readFile('shortcuts.thepret.json').then((response) {
+      List<ShortcutItem> sh = [];
+      if (response != null) {
+        response.forEach((s) {
+          sh.add(ShortcutItem(
+            type: s['type'],
+            localizedTitle: s['localizedTitle'],
+            icon: 'ic_launcher',
+          ));
+        });
+      }
+      setState(() {
+        shortcuts = response ?? [];
+        shortcutItems = sh;
+      });
+
+      quickActions.setShortcutItems(shortcutItems);
+    });
+
+    storage.readFile('tea-list.thepret.json').then((response) {
       setState(() {
         teasList = response ?? [];
       });
@@ -50,6 +75,12 @@ class AppController extends State<App> {
 
     setState(() {
       notifications = flutterLocalNotificationsPlugin;
+    });
+
+    quickActions.initialize((String shortcutType) {
+      setState(() {
+        shortcut = shortcutType;
+      });
     });
 
     super.initState();
@@ -72,7 +103,7 @@ class AppController extends State<App> {
       teasList.add(tea);
     });
 
-    storage.writeFile(teasList);
+    storage.writeTeasListAsFile(teasList);
   }
 
   void updateTea(Map<String, dynamic> tea) {
@@ -82,7 +113,7 @@ class AppController extends State<App> {
       teasList.replaceRange(idx, idx + 1, [tea]);
     });
 
-    storage.writeFile(teasList);
+    storage.writeTeasListAsFile(teasList);
   }
 
   void removeTea(Map<String, dynamic> tea) {
@@ -92,7 +123,7 @@ class AppController extends State<App> {
       teasList.replaceRange(idx, idx + 1, []);
     });
 
-    storage.writeFile(teasList);
+    storage.writeTeasListAsFile(teasList);
   }
 
   void archiveTea(Map<String, dynamic> tea) {
@@ -104,7 +135,7 @@ class AppController extends State<App> {
       teasList.replaceRange(idx, idx + 1, [tea]);
     });
 
-    storage.writeFile(teasList);
+    storage.writeTeasListAsFile(teasList);
   }
 
   void updateDisplayArchived(bool value) {
@@ -118,7 +149,64 @@ class AppController extends State<App> {
       teasList.addAll(teas);
     });
 
-    storage.writeFile(teasList);
+    storage.writeTeasListAsFile(teasList);
+  }
+
+  void updateShortcuts() {
+    List<ShortcutItem> sh = [];
+    shortcuts.forEach((s) {
+      sh.add(ShortcutItem(
+        type: s['type'],
+        localizedTitle: s['localizedTitle'],
+        icon: 'ic_launcher',
+      ));
+    });
+
+    setState(() {
+      shortcutItems = sh;
+    });
+
+    quickActions.setShortcutItems(shortcutItems);
+  }
+
+  bool isShortcut(id) {
+    int shIdx = shortcuts.indexWhere((s) => s['type'] == id);
+    return shIdx >= 0;
+  }
+
+  void toggleShortcut(tea) {
+    if (isShortcut(tea['id'])) {
+      removeShortcut(tea);
+    } else {
+      addShortcut(tea);
+    }
+  }
+
+  void addShortcut(tea) {
+    dynamic sc = {
+      'type': tea['id'],
+      'localizedTitle': tea['name'],
+    };
+
+    setState(() {
+      shortcuts.add(sc);
+    });
+
+    storage.writeShortcutAsFile(shortcuts);
+
+    updateShortcuts();
+  }
+
+  void removeShortcut(Map<String, dynamic> tea) {
+    int idx = shortcuts.indexWhere((element) => element['type'] == tea['id']);
+
+    setState(() {
+      shortcuts.replaceRange(idx, idx + 1, []);
+    });
+
+    storage.writeShortcutAsFile(shortcuts);
+
+    updateShortcuts();
   }
 
   MaterialPageRoute getRoute(RouteSettings settings) {
@@ -148,9 +236,25 @@ class AppController extends State<App> {
     if (uri.pathSegments.length == 2) {
       String id = uri.pathSegments[1];
       int idx = teasList.indexWhere((t) => t['id'] == id);
+
+      if (idx < 0) {
+        return MaterialPageRoute(
+          builder: (context) {
+            return HomeScreen(
+              saveTea: saveTea,
+              teasList: teasList,
+              displayArchived: displayArchived,
+              updateDisplayArchived: updateDisplayArchived,
+            );
+          }
+        );
+      }
+
       dynamic tea = teasList[idx];
 
       if (uri.pathSegments.first == 'tea') {
+        TeaRouteArgument args = settings.arguments;
+
         return MaterialPageRoute(builder: (context) {
           return TeaScreen(
             tea: tea,
@@ -158,6 +262,9 @@ class AppController extends State<App> {
             removeTea: removeTea,
             updateTea: updateTea,
             notifications: notifications,
+            isShortcut: isShortcut(id),
+            toggleShortcut: toggleShortcut,
+            startTimer: args != null ? args.startTimer : false,
           );
         });
       }

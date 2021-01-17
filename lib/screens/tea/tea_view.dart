@@ -11,11 +11,19 @@ import 'package:the_pret_flutter/widgets/timer/timer.dart';
 class TeaScreenView extends WidgetView<TeaScreen, TeaScreenController> {
   TeaScreenView(TeaScreenController state) : super(state);
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.tea['name'])),
+      appBar: AppBar(
+        title: Text(widget.tea['name']),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.star, color: widget.isShortcut ? Colors.yellow : Colors.white),
+            tooltip: AppLocalizations.of(context).translate('add shortcut'),
+            onPressed: () => widget.toggleShortcut(widget.tea),
+          )
+        ],
+      ),
       body: Center(
         child: Padding(
           padding: state.setPadding(context),
@@ -62,6 +70,7 @@ class TeaScreenView extends WidgetView<TeaScreen, TeaScreenController> {
                         notifications: widget.notifications,
                         minutes: state.tea['time']['minutes'],
                         seconds: state.tea['time']['seconds'],
+                        startTimer: widget.startTimer,
                       ),
                       RichText(
                         text: TextSpan(children: [
